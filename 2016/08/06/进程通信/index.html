@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          进程通信 - Srtianxia | Srtianxia&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://github.com/srtianxia/srtianxia.github.io/2016/08/06/进程通信/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Srtianxia&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#操作系统" title="操作系统">操作系统</a>
+                        
+                          <a class="tag" href="/tags/#进程" title="进程">进程</a>
+                        
+                    </div>
+                    <h1>进程通信</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by srtianxia on
+                        2016-08-06
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="进程通信"><a href="#进程通信" class="headerlink" title="进程通信"></a>进程通信</h1><p>进程相互制约，相互关联<br>进程通信：进程之间因为相互制约与相互关联而交换信息</p>
+<h2 id="进程同步与互斥（低级通信）"><a href="#进程同步与互斥（低级通信）" class="headerlink" title="进程同步与互斥（低级通信）"></a>进程同步与互斥（低级通信）</h2><h3 id="进程之间的关系"><a href="#进程之间的关系" class="headerlink" title="进程之间的关系"></a>进程之间的关系</h3><ul>
+<li>合作关系</li>
+<li>竞争关系</li>
+</ul>
+<p>同步：多个进程在执行过程中，为了共享资源与相互合作而在执行次序上的协调，称为同步，即共享同一资源的进程和相互关联进程以通信手段来保障完成任务时保持一种固定的时间关系。<br>互斥：当某一个进程访问某一资源时，不允许别的进程同时访问，这种限制称为互斥，即多个进程在访问某些资源（如临街资源）时，也要有一种执行次序上的协调，当一个进程访问完毕，另一个进程才能访问。所有就其本质来讲，互斥仍是一种同步。<br><a id="more"></a></p>
+<h3 id="临界资源与临界区"><a href="#临界资源与临界区" class="headerlink" title="临界资源与临界区"></a>临界资源与临界区</h3><h4 id="临界资源"><a href="#临界资源" class="headerlink" title="临界资源"></a>临界资源</h4><p>一次仅允许一个进程访问的资源称为<strong>临界资源</strong>（打印机，磁带机系统中的共享变量，表格，队列，栈等）</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-1281dc33fd8fb25f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="例题.png"></p>
+<h4 id="临界区"><a href="#临界区" class="headerlink" title="临界区"></a>临界区</h4><p>进程访问临界资源的程序段称为临界区</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-a79a35ff882e604c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="临界区.png"></p>
+<p>在一个系统中，可以用某些方法或某种机制保证进程对临界区的互斥访问，一个好的解决方案应该遵循以下条件</p>
+<ul>
+<li>任何两个进程不能同时处于临界区内</li>
+<li>进程在临界区外只能作有限时间的等待</li>
+<li>临界区外的进程不得阻塞其他进程进入临界区</li>
+<li>等待临界区时，释放CPU</li>
+</ul>
+<h4 id="对临界资源互斥访问的解决方法"><a href="#对临界资源互斥访问的解决方法" class="headerlink" title="对临界资源互斥访问的解决方法"></a>对临界资源互斥访问的解决方法</h4><ul>
+<li>锁变量<br>设一个共享锁变量L，表示某个临界资源。其初值为0，表示锁开的状态。<br>当进程要求进入临界区时，测试锁变量有两种情况：若L为0，表示锁开着，则将L置位1，既可进入临界区。使用完毕，将L置位0，以便其他进程使用该临界资源；若L为1，表示锁未开，则进程不断的进行测试，知道L为0时，方可进入临界区。</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-dff54a14873d80bd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="锁变量.png"></p>
+<p>存在问题</p>
+<ol>
+<li>忙等待，违背进程互斥访问临界区的条件 (规则4)</li>
+<li>两进程同于临界区违背了进程互斥访问临界区的条件(规则1)</li>
+</ol>
+<ul>
+<li>严格轮转法<br>设一个公共变量i，存放被允许进入临界区的进程的编号。<br>每个进程进入临界区时，对变量i进行测试，当进程编号与变量i的值相等时，方可进入临界区，否则反复进行测试的工作。<br>进程出临界区时为公用变量i设置允许进入临界区的进程编号，然后执行该进程非临界区的操作  //不通顺，回去看下书</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-43380268299bebf8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="严格轮转法.png"></p>
+<p>存在问题</p>
+<ol>
+<li>违背进程互斥访问临界区的条件(规则4)</li>
+<li>违背了进程互斥访问临界区的条(规则3)</li>
+</ol>
+<ul>
+<li>屏蔽中断<br>做法是：每个进程进入临界区时，首先关闭中断再访问临界区，在离开临界区之前打开中断。中断关闭后，则时钟中断也被屏蔽，CPU将无法进行进程切换，就不必担心其他进程竞争该资源。</li>
+</ul>
+<p>问题<br>若用户忘记打开中断，系统将终止。如果有多个CPU，一个进程访问一个临界区时，使用关闭中断仅仅可以阻止本CPU上执行的进程进入该临界区，不能防止别的CPU上的进程访问该临界区。</p>
+<blockquote>
+<p>中断：指当出现需要时，CPU暂时停止当前程序的执行转而执行处理新情况的程序和执行过程。即在程序运行过程中，系统出现了一个必须由CPU立即处理的情况，此时，CPU暂时中止程序的执行转而处理这个新的情况的过程就叫做中断。</p>
+</blockquote>
+<ul>
+<li>TS指令（Test and Set）<br>TS指令是一种利用硬件解决互斥的方法，通常将TS指令称为<strong>测试并上锁指令</strong>。<br>TS指令的定义 TS = lock；  lock = true； （ts lock为布尔值）<br>将lock作为某临界区的锁变量。当lock为false时，为未锁状态，即临界资源未被占用； 当lock为true时，为上锁状态，即临界资源已被占用。</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-e48b80279a07d6b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="TS指令.png"></p>
+<h3 id="信号量机制"><a href="#信号量机制" class="headerlink" title="信号量机制"></a>信号量机制</h3><h4 id="P、V操作"><a href="#P、V操作" class="headerlink" title="P、V操作"></a>P、V操作</h4><p>荷兰E.W.Dijkstra与1961提出的一种新的同步机制 - 信号量机制。<br>在信号量机制中，用一个整形变量作为信号量。设置两种基本操作P和V，利用对信号量的改变达到互斥与同步的目的。信号量的初始表示同类临界资源的个数。当它被初始化后，只能为P、V操作所改变。</p>
+<h5 id="P操作"><a href="#P操作" class="headerlink" title="P操作"></a>P操作</h5><p>设s为信号量， —临界资源<br>q为申请资源s的进程<br>Q为申请该资源s未得到满足而形成的等待队列</p>
+<p>具体工作如下</p>
+<ol>
+<li>s-1-&gt;s</li>
+<li>若s&gt;=0，则进程q继续执行</li>
+<li>若s&lt;0，则中断CPU，暂停执行，保留CPU现场，将q置位阻塞状态，q的PCB表放入s的等待队列Q中，转进程调度程序入口（即阻塞原语）</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-0b6ea8d99f6e45ab.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="P操作.png"></p>
+<h5 id="V操作"><a href="#V操作" class="headerlink" title="V操作"></a>V操作</h5><p>设s为信号量，—临界资源<br>q为申请资源s的进程<br>Q为申请该临界资源s未得到满足而形成的等待队列</p>
+<p>具体工作过程如下：</p>
+<ol>
+<li>s+1-&gt;s；</li>
+<li>若s&gt;0，则进程q继续执行</li>
+<li>若s&lt;=0，则从s的等待队列Q中唤醒一个进程，置位就绪状态，并将其PCB表插入就绪队列，q继续执行（即唤醒原语）</li>
+</ol>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-a1565e8ab7e87839.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="V操作.png"></p>
+<h5 id="使用PV操作需要注意的是"><a href="#使用PV操作需要注意的是" class="headerlink" title="使用PV操作需要注意的是"></a>使用PV操作需要注意的是</h5><ul>
+<li>P操作为请求资源而设，V操作为增加、释放资源而设；</li>
+<li>P操作可能引起正在执行状态的进程阻塞，V操作可以解封进程，即唤醒进程；</li>
+<li>在整个系统活动中，P、V必须成对出现</li>
+</ul>
+<h5 id="用P、V操作解决互斥问题"><a href="#用P、V操作解决互斥问题" class="headerlink" title="用P、V操作解决互斥问题"></a>用P、V操作解决互斥问题</h5><p>过程如下：设一个信号量s，表示某一个临界资源，初值为1，表示该资源未被占用。进程访问临界资源时，将临界区置于P(s)与V(s)操作之间即可。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-361be514ab2660a4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="P、V操作解决互斥.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-74c383d1e3202cd2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="例子.png"></p>
+<h5 id="用P、V操作解决同步问题"><a href="#用P、V操作解决同步问题" class="headerlink" title="用P、V操作解决同步问题"></a>用P、V操作解决同步问题</h5><p>同步是对两个以上进程之间执行次序的协调。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-45297c9ed5cad772.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="同步.png"></p>
+<p>作法：<br>信号量m — 缓冲区有无可供打印的结果（是否可取）m的初值为0。<br>信号量n — 缓冲区中计算结果是否被取走（是否可放）n的初值为0。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-fd2cb0713c8fdc45.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="P、V操作解决同步.png"></p>
+<h5 id="用P、V操作描述前趋关系"><a href="#用P、V操作描述前趋关系" class="headerlink" title="用P、V操作描述前趋关系"></a>用P、V操作描述前趋关系</h5><p><img src="http://upload-images.jianshu.io/upload_images/1213532-de2aac8c7dead2c2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="P、V操作描述前趋关系.png"></p>
+<p>若用P、V操作描述图中的前趋关系，则需在每个有向边上设一个信号量，初值为0<br>到达Si —P操作<br>从Si离去 —V操作</p>
+<h4 id="信号量集机制"><a href="#信号量集机制" class="headerlink" title="信号量集机制"></a>信号量集机制</h4><p>P、V操作一次只能对一个信号量做加一或减一操作，即只能使进程获得或释放一个单位的某种临界资源。假如进程一次需要共享多种资源，且每种资源个数不限于一个时，则P、V操作就显得效率不高，这种情况下我们可以用信号量集来解决。</p>
+<p>在信号集机制中，进程一次可以申请多个不同种类的临界资源，当可用资源个数低于系统规定的某一下限值时，不予分配</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-6f7083142af3903e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="SP.png"></p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-4bc51e428bb87f4d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="SV.png"><br>// 按照ppt顺序，这里还有个管程的概念</p>
+<h4 id="进程通信的类型"><a href="#进程通信的类型" class="headerlink" title="进程通信的类型"></a>进程通信的类型</h4><ul>
+<li>共享内存储区</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-ddc76ed5b051e47f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="共享内存储区.png"></p>
+<ul>
+<li>管道<br><strong>管道是外存上的一个共享文件</strong>，是一个单向的、先进先出的、固定大小的数据流。写进程向管道尾部写入数据，读进程从管道首部读出数据，管道空时，读进程被阻塞，管道满时，写进程被阻塞。管道提供了一种简单的流控制机制。<br><img src="http://upload-images.jianshu.io/upload_images/1213532-089c019439ad79d3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="管道.png"></li>
+<li>消息机制<br>进程之间的数据交换以消息为单位。消息是一组可以传递的信息。<br>通信的进程之间不存在共享的内存，而是由发送者执行发送命令，接收者执行接收命令，即完成了一次消息的传输。传输过程对用户是透明的，由操作系统完成。<ul>
+<li>直接通信方式（消息缓冲通信）:发送进程将消息直接发给接收进程，挂在接收进程的消息队列上，由接收进程自己从自己的消息队列上取下消息，完成一次消息的通信过程。<br>采用了一个数据结构—消息缓冲区<br><img src="http://upload-images.jianshu.io/upload_images/1213532-b3c76271af74fe07.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="消息缓冲区.png"><br>消息缓冲通信的通信过程<br><img src="http://upload-images.jianshu.io/upload_images/1213532-240432a024975a9e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="通信过程.png"><br>发送与接收原语的实现过程<br><img src="http://upload-images.jianshu.io/upload_images/1213532-f9ef59f3d37986bf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="发送与接收原语的实现过程.png"></li>
+<li>间接通信方式:通信时指明一个中间媒介，即<strong>信箱</strong>。发送者执行发送命令，将消息发送到指明的信箱，接受者执行接收命令时，从指定的信箱中接收消息。<br><img src="http://upload-images.jianshu.io/upload_images/1213532-6e2508678b9e8f49.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="信箱.png"></li>
+<li>其他的通信方式:例如软中断（或称为信号机制）就是UNIX系统中采用的通信方式之一</li>
+</ul>
+</li>
+</ul>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/08/06/请求分页原理/" data-toggle="tooltip" data-placement="top" title="请求分页存储管理">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/08/06/进程调度/" data-toggle="tooltip" data-placement="top" title="进程调度">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#操作系统" title="操作系统">操作系统</a>
+                        
+                          <a class="tag" href="/tags/#进程" title="进程">进程</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://github.com/srtianxia/srtianxia.github.io/2016/08/06/进程通信/";
+    var disqus_url = "http://github.com/srtianxia/srtianxia.github.io/2016/08/06/进程通信/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Srtianxia&#39;s Blog 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://github.com/srtianxia/srtianxia.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

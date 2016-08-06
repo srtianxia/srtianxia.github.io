@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          存储管理 - Srtianxia | Srtianxia&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://github.com/srtianxia/srtianxia.github.io/2016/08/06/存储管理/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Srtianxia&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#操作系统" title="操作系统">操作系统</a>
+                        
+                          <a class="tag" href="/tags/#存储管理" title="存储管理">存储管理</a>
+                        
+                    </div>
+                    <h1>存储管理</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by srtianxia on
+                        2016-08-06
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="存储管理的概念"><a href="#存储管理的概念" class="headerlink" title="存储管理的概念"></a>存储管理的概念</h1><p>存储器用于存放程序（指令）、操作数（数据）以及操作结果。计算机系统中，存储器一般分为主存储器和辅助存储器两大类。CPU可以直接访问主存储器中的指令和数据，但不能直接访问辅助存储器。在I/O控制系统管理下，辅助存储器与主存储器之间可以进行信息传递。<br><a id="more"></a></p>
+<ul>
+<li>主存储器简称主存，或称为内存。主存可分为系统区和用户区两个区域。</li>
+<li>存储管理是对主存中的用户区进行管理，其目的是尽可能方便用户和提高主存空间的利用率，使主存在成本、速度和规模之间获得较好的权衡。</li>
+</ul>
+<p>在现代计算机系统中，存储部件通常采用层次结构来组织，以便在成本、速度和规模等因素中获得较好的性价比。</p>
+<p>现代通用计算机，存储层次至少应具有三级</p>
+<ul>
+<li>最高层为<strong>CPU寄存器</strong></li>
+<li>中间层为<strong>主存</strong></li>
+<li>最底层为<strong>辅存</strong></li>
+</ul>
+<p>现代高级计算机系统可以分为下面几层<br><img src="http://upload-images.jianshu.io/upload_images/1213532-4ccc194cc14db94b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"><br>上面四个均属于操作系统存储管理的管辖范围，掉电后它们存储的信息不再存在。下面两个属于设备管理的管辖范围，可以长期存储。磁盘缓存本身并不是一种实际存在的存储介质，它依托于固定磁盘，提供对主存储器存储空间的扩充。</p>
+<h1 id="内存管理的主要任务"><a href="#内存管理的主要任务" class="headerlink" title="内存管理的主要任务"></a>内存管理的主要任务</h1><ul>
+<li>合理的建立用户程序与内存空间的对应关系</li>
+<li>为各道程序分配内存空间</li>
+<li>运行完成后再予以回收</li>
+<li>始终保证系统程序和各用户程序安全</li>
+</ul>
+<h1 id="物理地址和逻辑地址"><a href="#物理地址和逻辑地址" class="headerlink" title="物理地址和逻辑地址"></a>物理地址和逻辑地址</h1><ul>
+<li>主存储器的存储单元以<strong>字节</strong>（每个字节为8位二进制）为单位编址，每个存储单元都有一个地址与其相对应。假定主存储器就有n个字节的存储空间，其地址编号为0，1,2…n-1。这些地址称为主存储器的<strong>物理地址</strong>（绝对地址），由物理地址所对应的主存空间称为<strong>物理地址空间</strong>。</li>
+<li>多道程序设计系统中，主存中同时存放了多个用户作业。每次调入运行时，操作系统将根据主存的使用情况为用户分配主存空间。为了方便程序编制，每个用户可以认为自己作业的程序和数据存放在一组以“0”为地址开始的连续空间中。用户程序中所使用的地址称为<strong>逻辑地址</strong>，由逻辑地址对应的存储空间称为<strong>逻辑地址空间</strong>。</li>
+</ul>
+<h1 id="程序的装入"><a href="#程序的装入" class="headerlink" title="程序的装入"></a>程序的装入</h1><p>将一个用户源程序装入主存中并执行，通常需要经过以下几个步骤：首先由<strong>编译程序（Compiler）</strong>将用户源代码编译成若干<strong>目标模块（Object Module）</strong>；然后链接，由<strong>链接程序（Linker）</strong>将编译后形成的一组目标模块以及它们所需要的库函数链接在一起，形成一个完整的<strong>装入模块（Load Module）</strong>；最后装入，由<strong>装入程序（Loader）</strong>将装入模块装入主存。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-b201107cd630647b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="程序的装入.png"></p>
+<p>将一个装入模块装入主存，可以有<strong>绝对装入方式</strong>、<strong>静态重定位装入</strong>方式和<strong>动态重定位装入</strong>方式。</p>
+<p>重定位：当一个逻辑地址空间的程序装入到物理地址时，由于两个空间不一致，需要进行<strong>地址映射</strong>。</p>
+<ul>
+<li><p>绝对装入方式<br>如果在编译时知道程序驻留在主存的具体位置，则编译程序将产生物理地址的目标代码。绝对装入程序按照装入模块中的地址，将程序和数据装入主存。模块装入后由于程序中的逻辑地址与实际主存的地址完全相同，所以不需要对程序和数据的地址进行修改。<br>绝对装入方式只能将目标模块装入主存储器事先指定的固定位置，它只适用于<strong>单道程序</strong>环境。</p>
+</li>
+<li><p>静态重定位装入方式<br>在装入作业时，把该作业中的指令地址和数据地址一次性全部转换为物理地址，这样在作业执行过程中无需再进行地址转换工作，这种地址转换方式称为<strong>静态重定位</strong>，这个工作通常由<strong>装配程序</strong>完成。<br><img src="http://upload-images.jianshu.io/upload_images/1213532-5d28b0e8fa18a880.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="静态重定位.png"><br><strong>优点</strong>：容易实现，无需硬件支持，它要求程序本身是可重定位的，即对那些要修改的地址部分具有某种标示，地址重定位由专门设计的程序来完成。<br><strong>缺点</strong>：程序重定位后不可移动，因而不能重新分配内存，不利于内存的有效利用。</p>
+</li>
+<li><p>动态重定位装入方式<br>在装入作业时，装入程序直接把作业装入到所分配的主存空间中。在作业执行过程中，随着每条指令或数据的访问，由硬件地址转换机制自动地将指令中的逻辑地址转换成对应的物理地址。这种地址转换的方式是在<strong>作业执行中</strong>动态的完成的，故称为<strong>动态重定位</strong>，通常采用的办法是利用一个<strong>重定位寄存器</strong>，对每一个有效地址都要加上重定位寄存器中的内容，以形成绝对地址。<br><img src="http://upload-images.jianshu.io/upload_images/1213532-535357e7817fbc95.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="动态重定位.png"><br>采用动态重定位时，由于装入主存的作业扔保持逻辑地址，所以必要时可改变作业在主存储器中的存放位置。<br><strong>优点</strong>：程序在内存中的搬移不会对程序的正确执行造成影响，使内存得以被充分利用<br><strong>缺点</strong>：需要附加的硬件支持，实现存储管理的软件比较复杂</p>
+</li>
+</ul>
+<h2 id="虚拟存储器概念的引入"><a href="#虚拟存储器概念的引入" class="headerlink" title="虚拟存储器概念的引入"></a>虚拟存储器概念的引入</h2><p>就是人人们经常说的虚拟内存，是使用一部分<strong>外存</strong>当做内存来使用，使内存扩大，是对用户透明的</p>
+<h1 id="分区式存储管理"><a href="#分区式存储管理" class="headerlink" title="分区式存储管理"></a>分区式存储管理</h1><ul>
+<li>单一连续分配</li>
+<li>分区分配<ul>
+<li>固定分配</li>
+<li>动态分配</li>
+<li>动态重定位分区</li>
+</ul>
+</li>
+</ul>
+<h2 id="单一连续分配"><a href="#单一连续分配" class="headerlink" title="单一连续分配"></a>单一连续分配</h2><p>主要用于单用户单任务操作系统（如DOS）<br>实施方案</p>
+<ul>
+<li>内存分配<br>整个内存划分为系统区和用户区</li>
+<li>地址映射<br>物理地址 = 用户区基地址 + 逻辑地址</li>
+<li>内存保护<br>基址寄存器、界限寄存器、越界中断信号  </li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-a7ac35ac15361f28.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="单一连续分配.png"><br>单一连续存储管理每次只允许一个作业装入主存储器，因此可以不必考虑作业在主存中移动的问题，所以当作业被装入主存时，系统一般采用静态重定位进行地址转换，当然动态也可以。</p>
+<p>单一连续存储管理方式下的存储保护比较简单，即判断物理地址&gt;=界限地址，并且物理地址&lt;=主存最大地址，条件成立则执行，否则形成<strong>地址越界</strong>程序性中断事件。当采用静态重定位装入方式时，又装入程序检查其物理地址是否超过<strong>界限地址</strong>，若是，则可以装入，否则产生地址错误程序不能装入。这样一个被装入的作业，总能保证在用户区中执行，避免破坏系统区中的信息，达到<strong>存储保护</strong>的目的</p>
+<h2 id="固定式分区分配"><a href="#固定式分区分配" class="headerlink" title="固定式分区分配"></a>固定式分区分配</h2><p>应多道程序的存储管理而产生，这里的固定指的是<strong>分区数目</strong>和<strong>分区大小</strong>固定，固定分区存储管理预先把主存储器中的用户区分割成若干个连续区域，每一个连续区域称为一个分区，每个分区的大小可以相同也可以不同。分割完成后，每个分区的大小和分区的数量就不变了。每个分区只能<strong>装入一个作业</strong>，<strong>不允许一个作业跨分区存储</strong></p>
+<ul>
+<li>内存分配/回收<br>分区说明表（由系统建立）<br><img src="http://upload-images.jianshu.io/upload_images/1213532-67ec3b73d2d1d848.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="分区说明表.png"></li>
+<li>地址映射<br>物理地址 = 分区地址 + 逻辑地址</li>
+<li>内存保护<br>分区始地址、逻辑地址与所给分区大小相比较（见上方分区说明表）</li>
+</ul>
+<p><strong>缺点</strong><br>内存空间的利用率低，有较多的碎片，下图只有25%的利用率</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-d179175e42510980.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<p>关于固定式分区优化可以采用<strong>多个作业队列的固定分区法</strong>，使用多个队列（按照进程大小分队列：大进程队列，小进程队列）系统分区时先预先分区为大小不同的分区，之后每个队列在大小不同的分区处等待调度，可以更好的利用空间</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-f61ef38bdd2632cf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="多个作业队列的固定分区法.png"></p>
+<h2 id="动态分区分配"><a href="#动态分区分配" class="headerlink" title="动态分区分配"></a>动态分区分配</h2><p>可变式分区分配策略，在进程装入和处理过程中建立分区，并要使分区的容量能正好适应进程的大小，换句话说就是让下面两个量一一对应。<br><strong>内存分区数目</strong> -&gt; <strong>进程数目</strong><br><strong>分区的大小</strong> -&gt; <strong>各个进程的大小</strong></p>
+<h3 id="动态分区的分配过程"><a href="#动态分区的分配过程" class="headerlink" title="动态分区的分配过程"></a>动态分区的分配过程</h3><p>下图显示了空间的<strong>分配</strong>和<strong>去分配</strong><br><img src="http://upload-images.jianshu.io/upload_images/1213532-c6452fc7ed3d0b32.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="动态分区分配.png"></p>
+<h4 id="可变分区的数据结构"><a href="#可变分区的数据结构" class="headerlink" title="可变分区的数据结构"></a>可变分区的数据结构</h4><p>采用可变分区存储管理方式管理存储空间时，主存中已占用分区和空闲区的数目大小都是可变的，为了实现可变分区和已分配分区的情况，为系统空间分配提供依据。常用的数据结构有以下两种形式。</p>
+<ul>
+<li>分区表<br>系统设置<strong>空闲分区表</strong>和<strong>已分配分区表</strong>，用来描述空闲分区和已分配分区的情况，为系统空间分配提供依据。<br><img src="http://upload-images.jianshu.io/upload_images/1213532-72ea5d93ee0ff1ba.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="分区表.png"></li>
+<li>分区链<br>为了实现对空闲分区的分配和链接，在每个分区的<strong>初始部分</strong>，设置一些用于控制分区分配的信息，以及用于链接前一个分区的前向指针；在分区尾部则设置一后向指针，通过前后向链接指针，可以将<strong>所有的空闲分区连接成一个双向链</strong>。为了检索方便，在分区尾部重复设置状态位和分区大小表目。<br><img src="http://upload-images.jianshu.io/upload_images/1213532-48f169aff3169ad7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="空闲分区链.png"></li>
+</ul>
+<h4 id="可变分区分配算法"><a href="#可变分区分配算法" class="headerlink" title="可变分区分配算法"></a>可变分区分配算法</h4><p>将一个作业装入主存，须按照一定的分配算法，从空闲分区表或空闲分区链中选出一个分区分配给该作业。可变分区存储操作管理常用的空间分配算法有：</p>
+<ul>
+<li>首次适应算法（FF，Frist Fit）<br>空闲分区链以地址递增的顺序链接，分配时从链首开始查找，找到第一个大小可以满足的分区为止。<br>经过若干次作业的装入与撤离后，有可能把较大的主存空间分割成若干小的、不连续的新空闲分区，这些空闲分区的长度可能比较小，不能满足主存再次分配的需要，从而使主存空间的利用率大大降低这些空闲分区称为碎片.</li>
+<li>循环首次适应算法<br>为了改变首次适应算法每次从链首开始查寻造成的缺陷，可以增加一个<strong>起始查寻指针</strong>，指向下一次开始查寻时的起始分区，在查寻过程中，该指针向后移动，当移动到最后一个空闲分区后，重新回到链首。<br>这种方法可以使内存区分配比较平均，减少查寻次数，但又造成了缺少大空闲分区，使得大进程无法进入。(原因 ？？？？)</li>
+<li>最佳适应算法<br>空闲分区按照分区<strong>容量递增</strong>的方式形成，分配时从链首开始查找，平均查找次数为分区数的一半，也就是说它是<strong>最佳适应</strong>的。<br>这种方法所造成的剩余分区又肯定是相对最小的，通常难以利用，甚至我们可以说，每次分配一个分区都会造成一个无法再利用的<strong>碎片</strong>，而这些<strong>碎片</strong>的总容量可能是比较大的。</li>
+<li>最差适应算法<br>并非<strong>最差</strong>，空闲分区链按照<strong>容量递减</strong>的方式形成，分配时从链首开始，若链首分区大小不满足，则可以肯定不纯在能够满足要求的分区；否则对链首分区进行划分，剩余空间成为<strong>碎片</strong>的可能性肯定是最小的。<br>具有查找速度快分区碎片少的优点，但又会产生缺少大分区的缺点。</li>
+</ul>
+<h3 id="动态分区的回收"><a href="#动态分区的回收" class="headerlink" title="动态分区的回收"></a>动态分区的回收</h3><p>装入的作业执行结束后，它所占据的分区将被回收，回收后的空闲分区登记在空闲分区表中，用来装入新的作业。回收空间时应检查是否存在<strong>与回收区相邻的空闲分区</strong>，如果有，则将其<strong>合并为一个新的空闲分区</strong>进行登记管理。<br><img src="http://upload-images.jianshu.io/upload_images/1213532-59396719a196b695.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=" 动态分区的回收.png"></p>
+<h3 id="动态重定位分区分配"><a href="#动态重定位分区分配" class="headerlink" title="动态重定位分区分配"></a>动态重定位分区分配</h3><p>关于在动态分区分配方法中，碎片问题可以采用紧凑的方式，使分散的空闲分区集中起来以容纳新的作业。<br>紧凑：<br><img src="http://upload-images.jianshu.io/upload_images/1213532-034e3ce62699bbd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="紧凑.png"><br>动态重定位分区分配 = <strong>动态分配</strong> + 紧凑</p>
+<h4 id="分区分配方案的评价"><a href="#分区分配方案的评价" class="headerlink" title="分区分配方案的评价"></a>分区分配方案的评价</h4><p><strong>地址映射</strong> -&gt; 物理地址 = 分区始地址 + 逻辑地址</p>
+<p>固定分区分配 -&gt; 基址寄存器<br>动态分区分配 -&gt; 基址寄存器<br>动态重定位分区分配 -&gt; 重定位寄存器</p>
+<p><strong>内存保护</strong> -&gt;基址寄存器and限长寄存器or下限寄存器and上限寄存器</p>
+<h5 id="分区分配方案的主要优点"><a href="#分区分配方案的主要优点" class="headerlink" title="分区分配方案的主要优点"></a><strong>分区分配方案</strong>的主要优点</h5><ul>
+<li>多道程序下的内存共享，改善了系统吞吐量，在内存利用率方面，从固定式分区到动态分区，再到动态重定位分区依次提高。</li>
+<li>相对于后面介绍的存储管理方式，为实现分区分配所使用的数据结构占用的存储容量相对较少，算法也相对简单。</li>
+<li>实现存储保护的措施也比较简单。<h5 id="分区分配方案的主要缺点"><a href="#分区分配方案的主要缺点" class="headerlink" title="分区分配方案的主要缺点"></a><strong>分区分配</strong>方案的主要缺点</h5></li>
+<li>内存仍不能充分利用，处了<strong>动态重定位式分区法</strong>外，都存在着严重的碎片问题。</li>
+<li>不能实现对内存的扩充，因此进程的大小收到内存可用空间的限制。</li>
+<li>与单一连续分配一样，要求一个进程在执行之前必须全部装入内存，因此在内存中可能包含不会被使用的信息。</li>
+<li>紧凑提高了内存利用率，但是进程移动所产生的额外开销增加了CPU的负担。</li>
+<li>几个并行进程之间不能共享存入内存的单一信息副本（公用子程序，数据段等）</li>
+</ul>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/08/06/覆盖和对换/" data-toggle="tooltip" data-placement="top" title="覆盖和对换">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/08/06/Thinking In Java类型信息/" data-toggle="tooltip" data-placement="top" title="Java类型信息">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#操作系统" title="操作系统">操作系统</a>
+                        
+                          <a class="tag" href="/tags/#存储管理" title="存储管理">存储管理</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://github.com/srtianxia/srtianxia.github.io/2016/08/06/存储管理/";
+    var disqus_url = "http://github.com/srtianxia/srtianxia.github.io/2016/08/06/存储管理/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Srtianxia&#39;s Blog 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://github.com/srtianxia/srtianxia.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

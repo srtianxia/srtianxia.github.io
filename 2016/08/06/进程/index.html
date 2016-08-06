@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          进程 - Srtianxia | Srtianxia&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://github.com/srtianxia/srtianxia.github.io/2016/08/06/进程/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Srtianxia&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#操作系统" title="操作系统">操作系统</a>
+                        
+                          <a class="tag" href="/tags/#进程" title="进程">进程</a>
+                        
+                    </div>
+                    <h1>进程</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by srtianxia on
+                        2016-08-06
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>因为拿到了暑期的实习offer，要在考试复习周的时候就赶去上海实习，所以苦逼的学生党现在就得准备期末考试，顺便记录下来，以后可能有用，毕竟是老师口中的专业素养。</p>
+<h2 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h2><p>硬件的并行操作与程序的并发执行都需要CPU在多道程序中快睡切换，原有的程序无法做到这一点，引入新概念进程。<br>进程是操作系统中最重要最核心的概念，<strong>他是对正在运行的程序的抽象，是独立调度运行与资源分配的基本单位</strong><br><a id="more"></a></p>
+<h2 id="程序的顺序执行"><a href="#程序的顺序执行" class="headerlink" title="程序的顺序执行"></a>程序的顺序执行</h2><p>也叫作单道程序，指一个程序运行时独占整个操作系统资源，处理机严格按照程序所规定的顺序进行。在一个程序段中，只有前面一个操作执行完，才能进行后面一个操作。在一个程序段的执行过程中，不能插入其他程序段中的操作。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-a59c6bd1dd588fa5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="顺序执行.png"></p>
+<h3 id="顺序执行的特性"><a href="#顺序执行的特性" class="headerlink" title="顺序执行的特性"></a>顺序执行的特性</h3><ul>
+<li>顺序性</li>
+<li>封闭性<br>程序执行时独占系统资源，系统内各种资源的状态（初始状态除外）只能被本程序所改变，因此其执行结果不受外界因素的干扰</li>
+<li>结果可再现性<br>只要程序的执行环境与初始状态不变，当重复执行时，所得的结果相同，与执行速度无关。</li>
+</ul>
+<h2 id="程序的并发执行"><a href="#程序的并发执行" class="headerlink" title="程序的并发执行"></a>程序的并发执行</h2><p>也叫作多道程序，多个程序段在计算机系统中“一起”执行，例如，在一个时间段内，一个CPU在为多道程序工作，而在某一个瞬间，一个CPU只能运行一道程序，它只是在多道程序中快速切换，给人以CPU“同时”运行几道程序的感觉，每个程序内部仍是按顺序执行，但是多个程序的执行过程是可交叉的，这是一种伪并行，称为并发执行。<br><img src="http://upload-images.jianshu.io/upload_images/1213532-ab1ea7bfc85b2d78.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="并发执行.png"></p>
+<h3 id="并发执行的特性"><a href="#并发执行的特性" class="headerlink" title="并发执行的特性"></a>并发执行的特性</h3><ul>
+<li>顺序性<br>多个程序段并发执行时，每个程序段中语句的顺序执行仍然保持，但是多个程序段之间不再保持顺序执行的关系</li>
+<li>间断性<br>多个程序段并发执行时，由于共享资源或由于相互合作而形成执行时的相互制约关系，使得每个程序段执行时产生了间断性（等待资源的时候）</li>
+<li>非封闭性<br>多个程序段并发执行时，每个程序段不再独占系统资源，执行时受外界因素影响。例如，当一个用户的程序段执行中必须使用某个I/O设备时，其他用户的程序段申请使用该设备，就必须等待。</li>
+<li>不可再现性<br>多个程序段并发执行时，产生了非封闭性，不再独占系统资源，同时，即使程序执行的环境与初始状态不变，重复执行时运算速度通常也不可再现，若运算结果与执行速度有关，则可能会被改变。</li>
+</ul>
+<h3 id="并发执行带来的相应问题"><a href="#并发执行带来的相应问题" class="headerlink" title="并发执行带来的相应问题"></a>并发执行带来的相应问题</h3><ul>
+<li>程序结果的封闭性和执行的可再现性不再满足<br>资源共享-&gt;造成资源共享与竞争-&gt;程序执行速度的改变</li>
+<li>程序与计算不再一一对应<br>程序是指令的集合（静态概念），而计算是程序的执行过程（动态概念） 程序只有作用在一组数据上的一次执行过程才能完成用户要求的计算任务。若有一个共享程序，每个用户都组织好自己的一组数据，调用该程序执行。在多道程序执行环境中，一个程序可同时处于多个执行过程，形成了多个“计算”这时静态的程序将对应多个动态的计算。</li>
+<li>计算之间存在复杂的相互制约的关系<br>相互制约指的是相关的计算过程由于资源的共享和竞争而需要进行的协调、控制工作，以确保计算的正确完成。多道程序的执行环境中，资源的贡献和竞争会导致计算过程之间复杂的相互制约关系。</li>
+</ul>
+<p>并发执行环境的以上特点，使程序固有的<em>顺序性</em>、<em>封闭性</em>受到破坏。在多道程序执行环境中如果仍以程序作为运行的基本单位，显然无法满足<em>并发性</em>、<em>随机性</em>及<em>资源动态共享</em>等要求，为适应并发执行环境的特点，简化操作系统的设计，适应程序的一次执行这一动态计算的概念，操作系统引入了进程这一概念实体作为<strong>操作系统管理，资源分配及调度执行的基本单位</strong></p>
+<h2 id="进程的定义"><a href="#进程的定义" class="headerlink" title="进程的定义"></a>进程的定义</h2><p>许多人都对进程下过定义，而且各自都有各自的道理，在这里给出一种</p>
+<ul>
+<li>进程是程序作用在一组数据上的一次执行过程（一次计算）</li>
+<li>进程是操作系统中一个可以独立调度和资源分配的基本单位</li>
+<li>进程是可以和别的计算并发执行的计算<br>注：UNIX系统中的定义和此系统中的定义完全一致</li>
+</ul>
+<h2 id="进程的特征"><a href="#进程的特征" class="headerlink" title="进程的特征"></a>进程的特征</h2><ul>
+<li>并发性<br>内存中多个进程能在一段时间内同时运行，并发性使得进程的程序执行过程随时被中断，多个进程的程序可以并发执行，这是进程最基本的特征之一，而程序是不能并发执行的。</li>
+<li>动态性<br>进程由创建到消亡是有一定生命期的，在生命期间进程是一个活动实体。而程序是可以永久存放于某种介质上的有序指令集合，是一个静态实体</li>
+<li>独立性<br>进程是一个能够独立运行的基本单位，即只有进程才能被独立调度运行及独立获得资源，在系统中，除了系统提供的服务外，只有进程在活动，而程序是不能作为调度运行和或得资源的基本单位的。</li>
+<li>异步性<br>进程以各自独立的、不可预知的速度向前推进。这一特性基于进程的并发性，需要<strong>操作系统</strong>采取必要的措施，以保证各个进程的程序之间能协调运行</li>
+<li>结构特性<br>进程实体中包含有程序段、数据段、还必须有一个存放生命期间管理信息的数据结构-进程控制块(Progress Control Block)。进程控制块PCB能够保证进程并发执行及生命期间进程活动的顺利进行，不同的进程是以PCB来区别的，不同的PCB代表不同的进程。</li>
+</ul>
+<h3 id="进程的描述"><a href="#进程的描述" class="headerlink" title="进程的描述"></a>进程的描述</h3><ul>
+<li>PCB</li>
+<li>程序段</li>
+<li>数据段<br><img src="http://upload-images.jianshu.io/upload_images/1213532-9972654eb1df462c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="进程的描述.png"></li>
+</ul>
+<p>一个进程一经创建就有如下三部分内容</p>
+<ul>
+<li>PCB表<br>为了便于管理，PCB表被放在不同的队列或状态中。新建进程的PCB表被放在就绪队列中，根据进程在活动过程中所处的状态，PCB表可被放在就绪队列或阻塞队列中，也可以处于执行状态中。</li>
+<li>可执行的程序段<br>其首地址由PCB表中程序地址信息字段直接或者间接指出</li>
+<li>可加工的数据段<br>其首地址由PCB表中数据地址信息字段直接或间接指出，有的进程可以没有数据段</li>
+</ul>
+<p>进程控制块PCB是为了描述进程动态变化过程以及对进程进行控制与管理而设的<strong>数据结构</strong>，进程与PCB表一一对应，操作系统根据PCB表了解进程的存在，它是进程是否存在的唯一标志。<br>PCB表常驻内存，属于系统空间，只有操作系统程序才能访问，用户程序不得访问。<br>进程的程序段和数据段均属于用户空间，<strong>运行时</strong>可以根据需要全部地或者部分地放在内存中。进程处于非执行状态时，如果内存有剩余空间，它的程序段和数据段放在内存，如果内存无剩余空间，则可以放在外存。<em>进程处于执行状态时，程序段与数据段必须有一部分放在内存，以方便执行</em>。程序段与数据段在内存和外存中的物理地址是由PCB表的<strong>地址信息段</strong>指明的。</p>
+<h2 id="PCB表的结构及组织形式"><a href="#PCB表的结构及组织形式" class="headerlink" title="PCB表的结构及组织形式"></a>PCB表的结构及组织形式</h2><p>PCB表描述进程情况及控制进程运行时所需要的全部信息，操作系统根据PCB提供的信息实施对进程的控制与管理。</p>
+<p>操作系统专门开辟一个PCB表区，每个PCB是一片连续的存储单元，根据PCB表所对应的进程的运行状态，所有的PCB表被组成若干个队列，如就绪队列、阻塞队列等，空闲的PCB表组成一个空闲队列，以备创建进程时申请使用和撤销进程时进行回收使用。</p>
+<h4 id="PCB的结构"><a href="#PCB的结构" class="headerlink" title="PCB的结构"></a>PCB的结构</h4><p>根据系统的设计目标而异，不同的操作系统其PCB结构和内容不尽相同，但是至少包括</p>
+<ul>
+<li>进程标识信息  </li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>进程标识信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>进程名</td>
+</tr>
+<tr>
+<td>用户名</td>
+</tr>
+<tr>
+<td>父进程名</td>
+</tr>
+<tr>
+<td>子进程名</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>进程控制信息</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>进程控制信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>进程状态标志state</td>
+</tr>
+<tr>
+<td>进程优先级</td>
+</tr>
+<tr>
+<td>进程程序入口地址</td>
+</tr>
+<tr>
+<td>进程数据存放位置</td>
+</tr>
+<tr>
+<td>计时信息</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>资源信息</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>资源信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>主存资源信息</td>
+</tr>
+<tr>
+<td>i/o设备有关信息</td>
+</tr>
+<tr>
+<td>辅存存放位置</td>
+</tr>
+<tr>
+<td>进程队列指针组</td>
+</tr>
+<tr>
+<td>文件信息</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>执行现场信息</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>执行现场信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU通用寄存器</td>
+</tr>
+<tr>
+<td>…</td>
+</tr>
+<tr>
+<td>CPU控制寄存器</td>
+</tr>
+<tr>
+<td>…</td>
+</tr>
+<tr>
+<td>程序状态字PSW</td>
+</tr>
+</tbody>
+</table>
+<h3 id="进程的状态以及变迁"><a href="#进程的状态以及变迁" class="headerlink" title="进程的状态以及变迁"></a>进程的状态以及变迁</h3><h5 id="基本状态"><a href="#基本状态" class="headerlink" title="基本状态"></a>基本状态</h5><ul>
+<li>就绪<br>进程获得必要资源，如内存等，已经具备了执行条件，只是没有空闲的CPU，处于等待CPU的状态。在系统中，将处于就绪状态的多个进程的PCB表排成一个队列，或按照某种规则排在不同的队列中，这些队列成为<strong>就绪队列</strong></li>
+<li>执行<br>已获得必要的资源和CPU，它的程序正在执行中，这时进程的状态称为执行状态。在多处理机系统中（我的理解是支持多核CPU的操作系统在多核CPU环境下运行），可以有多个进程处于执行状态。在单处理机系统中，只能有一个进程处于执行状态，系统尽量保证一个CPU上总有一个处于执行状态的进程，使CPU得到充分的利用</li>
+<li>阻塞<br>进程因等待事件发生（i/o请求，某些原语操作等等）而处于暂停执行的状态，<strong>此时即使将CPU分配给它，它的程序也无法执行</strong>。在系统中，将处于阻塞状态的进程PCB表排在一个队列，或因阻塞原因不同而将进程的PCB表排在不同的队列中，这些队列成为阻塞队列。</li>
+</ul>
+<p><strong>进程在运行过程中必处于三个基本状态之一</strong></p>
+<ul>
+<li>就绪 -&gt;执行</li>
+<li>执行-&gt;就绪</li>
+<li>执行-&gt;阻塞</li>
+<li>阻塞-&gt;就绪<br><img src="http://upload-images.jianshu.io/upload_images/1213532-39a0538ec8b3c2c6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="状态的变迁.png"></li>
+</ul>
+<h3 id="进程的活动与静止状态"><a href="#进程的活动与静止状态" class="headerlink" title="进程的活动与静止状态"></a>进程的活动与静止状态</h3><ul>
+<li>进程挂起</li>
+<li>静止状态</li>
+<li>激活</li>
+</ul>
+<p><img src="http://upload-images.jianshu.io/upload_images/1213532-4d9b88cb0ff57c8c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="活动与静止状态.png"></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/08/06/进程调度/" data-toggle="tooltip" data-placement="top" title="进程调度">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/08/06/计算机网络_物理层/" data-toggle="tooltip" data-placement="top" title="物理层">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#操作系统" title="操作系统">操作系统</a>
+                        
+                          <a class="tag" href="/tags/#进程" title="进程">进程</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://github.com/srtianxia/srtianxia.github.io/2016/08/06/进程/";
+    var disqus_url = "http://github.com/srtianxia/srtianxia.github.io/2016/08/06/进程/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Srtianxia&#39;s Blog 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://github.com/srtianxia/srtianxia.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

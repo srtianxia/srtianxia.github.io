@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Android消息处理机制 - Srtianxia | Srtianxia&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://github.com/srtianxia/srtianxia.github.io/2016/08/06/Android消息处理/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Srtianxia&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Android" title="Android">Android</a>
+                        
+                          <a class="tag" href="/tags/#Looper" title="Looper">Looper</a>
+                        
+                          <a class="tag" href="/tags/#Handler" title="Handler">Handler</a>
+                        
+                    </div>
+                    <h1>Android消息处理机制</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by srtianxia on
+                        2016-08-06
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="Looper"><a href="#Looper" class="headerlink" title="Looper"></a>Looper</h2><p>Looper的作用是使一个线程变为looper线程，即消息循环的线程，内部实现简单来说就是维护了一个阻塞队列（实际上<code>MessageQueue</code>是一个单链表）并实现了一个死循环，没有消息的时候就阻塞等待消息的到来。</p>
+<p>每一个<code>Thread</code>只有一个<code>Looper</code>，由<code>ThreadLocal</code>存储，<code>ThreadLocal</code>是一个线程本地存储变量，内部维护了一个<code>map</code>，用当前线程作为<code>key</code>来存储一定的<code>value</code>，这些<code>value</code>是线程间私有的，也就是其他线程不能访问到当前线程对应的<code>value</code>，这样就保证了每一个线程只对应一个<code>Looper</code>对象，每一个<code>Looper</code>还维护着对应的线程<code>mThread</code>和 <strong>一个</strong> 消息队列<code>mMessageQueue</code></p>
+<hr>
+<a id="more"></a>
+<p>让一个线程变为Looper线程只需要调用下面这两步</p>
+<ul>
+<li>Looper.prepare()<br>会先检查当前线程是否已经拥有了<code>Looper</code>对象（调用<code>mThreadLocal.get()</code>方法并检查返回值是否为空，在<code>get()</code>内部会调用<code>Thread.currentThread()</code>来获取当前线程并取得<code>value</code>也就是<code>Looper</code>对象）在这里会初始化<code>MessageQueue</code> (初始化看下文)和将<code>mThread</code>赋值为当前线程。</li>
+<li>Looper.loop()<br><code>loop()</code>方法是一个死循环,就是从<code>MessageQueue</code>中取消息(Message)来交给<code>Message</code>的<code>target</code>来处理，这个<code>target</code>是一个<code>handler</code>对象会调用<code>dispatchMessage()</code>来处理消息，这个方法在下文的handler中会介绍，跳出循环的条件是<code>MessageQueue</code>为空，而让这<code>MessageQueue</code>为空的办法不是简单的消息取完了，请看下面对于<code>MessageQueue</code>的介绍。</li>
+</ul>
+<h2 id="MessageQueue"><a href="#MessageQueue" class="headerlink" title="MessageQueue"></a>MessageQueue</h2><p>构造函数为包级私有，内部由Native方法<code>nativeInit()</code>实现，在外部除了调用<code>Looper.prepare()</code>方法，外部无法直接初始化。</p>
+<blockquote>
+<p><em>在<code>nativeInit()</code>中，new了一个Native层的<code>MessageQueue</code>的对象，并将其地址保存在了Java层<code>MessageQueue</code>的成员<code>mPtr</code> 中 <code>Android</code>中有好多这样的实现，一个类在Java层与Native层都有实现。</em></p>
+</blockquote>
+<ul>
+<li>enqueueMessage()<br>向消息队列中插入<code>Message</code></li>
+<li>next()<br>是一个无限循环的方法，如果消息队列中没有消息，<code>next()</code>方法就会一直阻塞在这里，当有消息到来时，<code>next()</code>会返回这条消息，并将其从消息队列中移除，所以对于上文的<code>loop()</code>方法，消息取完了消息队列也处于阻塞状态，置空方法只有调用<code>quit</code>或者<code>quitSafely</code>方法来通知消息队列退出。</li>
+</ul>
+<h2 id="Handler"><a href="#Handler" class="headerlink" title="Handler"></a>Handler</h2><p><code>Handler</code> 负责向<code>MessageQueue</code>发送消息和处理消息，内部维护着一个<code>MessageQueue</code>和<code>Looper</code>对象，但是由<code>Handler</code>的构造方法来看，这个MQ和<code>Looper</code>对象的MQ是同一个消息队列 。</p>
+<p>下面是handler的一种重载构造方法<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Handler</span><span class="params">(Looper looper, Callback callback, <span class="keyword">boolean</span> async)</span> </span>&#123;</div><div class="line">        mLooper = looper;</div><div class="line">        mQueue = looper.mQueue;</div><div class="line">        mCallback = callback;</div><div class="line">        mAsynchronous = async;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<hr>
+<h4 id="发送消息"><a href="#发送消息" class="headerlink" title="发送消息"></a>发送消息</h4><p><code>handler</code>的<code>post()</code> 、<code>postDelayed()</code>、<code>sendMessage()</code>等方法最终都是调用<code>sendMessageAtTime</code> 方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">sendMessageAtTime</span><span class="params">(Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">      MessageQueue queue = mQueue;</div><div class="line">      <span class="keyword">if</span> (queue == <span class="keyword">null</span>) &#123;</div><div class="line">          RuntimeException e = <span class="keyword">new</span> RuntimeException(</div><div class="line">                  <span class="keyword">this</span> + <span class="string">" sendMessageAtTime() called with no mQueue"</span>);</div><div class="line">          Log.w(<span class="string">"Looper"</span>, e.getMessage(), e);</div><div class="line">          <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">      &#125;</div><div class="line">      <span class="keyword">return</span> enqueueMessage(queue, msg, uptimeMillis);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>这个方法由获取到消息队列（消息队列<code>mQueue</code>是从与这个<code>handler</code>关联的<code>Looper</code>获得的）然后调用<code>enqueueMessage()</code>方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">enqueueMessage</span><span class="params">(MessageQueue queue, Message msg, <span class="keyword">long</span> uptimeMillis)</span> </span>&#123;</div><div class="line">        msg.target = <span class="keyword">this</span>;</div><div class="line">        <span class="keyword">if</span> (mAsynchronous) &#123;</div><div class="line">            msg.setAsynchronous(<span class="keyword">true</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>方法<code>enqueueMessage()</code>将<code>message</code>的<code>target</code>设置为当前的<code>handler</code>，然后调用<code>MessageQueue</code>的<code>enqueueMessage</code>(上文已经介绍)。</p>
+<hr>
+<p><strong>下面一小部分都是参考自博客，里面包含了很多native方法，能力有限，只看了一部分，有兴趣的可以参考<a href="http://www.cnblogs.com/angeldevil/p/3340644.html" target="_blank" rel="external">Android消息处理机制(Handler、Looper、MessageQueue与Message)</a></strong></p>
+<blockquote>
+<p>在调用<code>queue.enqueueMessage</code>之前先判断了<code>mAsynchronous</code>，从名字看是异步消息的意思，要明白<code>Asychronous</code>的作用，需要了解一个概念<code>Barrier</code>。</p>
+</blockquote>
+<p><code>Barrier</code>从名字上来看上是一个拦截器，在这个拦截器后面的消息暂时都无法执行，直到这个拦截器被移除，<code>MessageQueue</code>有一个函数叫<code>enqueueSyncBarrier</code>可以添加一个<code>Barrier</code> 。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">enqueueSyncBarrier</span><span class="params">(<span class="keyword">long</span> when)</span> </span>&#123;</div><div class="line">       <span class="comment">// Enqueue a new sync barrier token.</span></div><div class="line">       <span class="comment">// We don't need to wake the queue because the purpose of a barrier is to stall it.</span></div><div class="line">       <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">           <span class="keyword">final</span> <span class="keyword">int</span> token = mNextBarrierToken++;</div><div class="line">           <span class="keyword">final</span> Message msg = Message.obtain();</div><div class="line">           msg.arg1 = token;</div><div class="line"></div><div class="line">           Message prev = <span class="keyword">null</span>;</div><div class="line">           Message p = mMessages;</div><div class="line">           <span class="keyword">if</span> (when != <span class="number">0</span>) &#123;</div><div class="line">               <span class="keyword">while</span> (p != <span class="keyword">null</span> &amp;&amp; p.when &lt;= when) &#123;</div><div class="line">                   prev = p;</div><div class="line">                   p = p.next;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">           <span class="keyword">if</span> (prev != <span class="keyword">null</span>) &#123; <span class="comment">// invariant: p == prev.next</span></div><div class="line">               msg.next = p;</div><div class="line">               prev.next = msg;</div><div class="line">           &#125; <span class="keyword">else</span> &#123;</div><div class="line">               msg.next = p;</div><div class="line">               mMessages = msg;</div><div class="line">           &#125;</div><div class="line">           <span class="keyword">return</span> token;</div><div class="line">       &#125;</div><div class="line">   &#125;</div></pre></td></tr></table></figure></p>
+<p>在<code>enqueueSyncBarrier</code>中，先<code>obtain</code>一个<code>Message</code>，并设置了<code>msg arg1 ＝ token</code>，<code>token</code>仅是一个每次调用<code>enqueueSyncBarrier</code>时自增的<code>int</code>值，目的是每次调用<code>enqueueSyncBarrier</code>时返回唯一的<code>token</code>，这个<code>Message</code>同样需要设置执行时间，然后插入到消息队列，特殊的是这个<code>Message</code>没有设置<code>target</code>，即<code>msg target ＝ null</code>。</p>
+<h4 id="处理消息"><a href="#处理消息" class="headerlink" title="处理消息"></a>处理消息</h4><p>主要是方法<code>dispatchMessage()</code>，这个就是在<code>Looper.loop()</code>方法中<code>Message</code>对象的<code>target</code>调用的用来处理消息的方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">dispatchMessage</span><span class="params">(Message msg)</span> </span>&#123;  </div><div class="line">        <span class="keyword">if</span> (msg.callback != <span class="keyword">null</span>) &#123;  </div><div class="line">            handleCallback(msg);  </div><div class="line">        &#125; <span class="keyword">else</span> &#123;  </div><div class="line">            <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123;  </div><div class="line">                <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;  </div><div class="line">                    <span class="keyword">return</span>;  </div><div class="line">                &#125;  </div><div class="line">            &#125;  </div><div class="line">            handleMessage(msg);  </div><div class="line">        &#125;  </div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>上面的<code>handleMessage()</code>是一个空方法，就是我们创建<code>handler</code>对象的时候要复写的<code>handleMessage</code>方法，这里面的逻辑由自己控制。</p>
+<h2 id="Message"><a href="#Message" class="headerlink" title="Message"></a>Message</h2><blockquote>
+<p>在<code>Java</code>层，<code>Message</code>类表示一个消息对象，要发送消息首先就要先获得一个消息对象，<code>Message</code>类的构造函数是<code>public</code>的，但是不建议直接<code>new Message</code>，<code>Message</code>内部保存了一个缓存的消息池，我们可以用<code>obtain()</code>从缓存池获得一个消息，<code>Message</code>使用完后系统会调用<code>recycle()</code>回收，如果自己new很多<code>Message</code>，每次使用完后系统放入缓存池，会占用很多内存的。</p>
+</blockquote>
+<p><code>Message</code>类中有一个同类型的<code>next</code>，还还维护了一个<code>static Message</code> 类型的<code>sPool</code>作为缓存链表。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</div><div class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Message <span class="title">obtain</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">synchronized</span> (sPoolSync) &#123;</div><div class="line">            <span class="keyword">if</span> (sPool != <span class="keyword">null</span>) &#123;</div><div class="line">                Message m = sPool;</div><div class="line">                sPool = m.next;</div><div class="line">                m.next = <span class="keyword">null</span>;</div><div class="line">                sPoolSize--;</div><div class="line">                <span class="keyword">return</span> m;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Message();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">recycle</span><span class="params">()</span> </span>&#123;</div><div class="line">        clearForRecycle();</div><div class="line"></div><div class="line">        <span class="keyword">synchronized</span> (sPoolSync) &#123;</div><div class="line">            <span class="keyword">if</span> (sPoolSize &lt; MAX_POOL_SIZE) &#123;</div><div class="line">                next = sPool;</div><div class="line">                sPool = <span class="keyword">this</span>;</div><div class="line">                sPoolSize++;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h5><p><a href="http://www.cnblogs.com/angeldevil/p/3340644.html" target="_blank" rel="external">Android消息处理机制(Handler、Looper、MessageQueue与Message)</a><br><a href="http://qifuguang.me/2015/09/02/[Java%E5%B9%B6%E5%8F%91%E5%8C%85%E5%AD%A6%E4%B9%A0%E4%B8%83]%E8%A7%A3%E5%AF%86ThreadLocal/" target="_blank" rel="external"> Java并发包学习七 解密ThreadLocal</a></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/08/06/OS内核及进程控制/" data-toggle="tooltip" data-placement="top" title="OS内核及进程控制">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/08/06/值传递还是引用传递/" data-toggle="tooltip" data-placement="top" title="值传递还是引用传递">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Android" title="Android">Android</a>
+                        
+                          <a class="tag" href="/tags/#Looper" title="Looper">Looper</a>
+                        
+                          <a class="tag" href="/tags/#Handler" title="Handler">Handler</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://github.com/srtianxia/srtianxia.github.io/2016/08/06/Android消息处理/";
+    var disqus_url = "http://github.com/srtianxia/srtianxia.github.io/2016/08/06/Android消息处理/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Srtianxia&#39;s Blog 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://github.com/srtianxia/srtianxia.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
