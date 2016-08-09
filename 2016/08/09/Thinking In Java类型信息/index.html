@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Java类型信息 - Srtianxia | Srtianxia&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://github.com/srtianxia/srtianxia.github.io/2016/08/09/Thinking In Java类型信息/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Srtianxia&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#java" title="java">java</a>
+                        
+                    </div>
+                    <h1>Java类型信息</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by srtianxia on
+                        2016-08-09
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>Java在运行时识别对象和类的信息的行为的有两种方式</p>
+<ul>
+<li>RTTI（Run-Time Type Identification）  他假定我们在编译时已经知道了所有的类型</li>
+<li>反射  它允许我们在运行时发现和使用类的信息</li>
+</ul>
+<a id="more"></a>
+<h3 id="Class对象"><a href="#Class对象" class="headerlink" title="Class对象"></a>Class对象</h3><p>Class对象包含了与类有关的信息，就是用来创建类的所有的“常规”对象的。Java使用Class对象来执行其RTTI，即使你正在执行的是类似转型这样的操作。</p>
+<p>类是程序的一部分，每个类都有一个class对象，每当编写或者编译了一个新类，就会产生一个class对象（被保存在一个同名的.class文件中），为了生成这个类的对象，运行这个程序的java虚拟机（jvm）将使用被称为“类加载器”的子系统。</p>
+<p>类加载器子系统实际上可以包含一条类加载器链，但是只有一个原生类加载器，它是jvm实现的一部分。原生类加载器加载的是所谓的可信类，包括java api类，它们通常是从本地盘加载的，这条链中，通常不需要添加额外的类加载器，但是如果你有特殊需求（特殊方式加载类，或者从网络中下载类），那么你有一种方式可以挂接额外的类加载器。</p>
+<p>所有的类都是在对其第一次使用使，动态的加载到jvm中去的，当程序创建第一个对类的<strong>静态成员</strong>的引用时，就会加载这个类。这个证明了<strong>构造器也是类的静态方法</strong>。</p>
+<p>因此，java程序在它开始运行前并非完全加载，其各个部分是在必需时才加载的（动态加载）。</p>
+<p>类加载器先回检查这个类的class对象是否已经加载，如果尚未加载，默认的类加载器就会根据类名查找.class文件（例如，某个附加的类加载器可能会在数据库中查找字节码）。在这个类的字节码被加载时，它们会接受验证，以确保其没有被破坏，并且不包含不良的java代码（这是java中用于安全防范目的的措施之一）。</p>
+<p>一旦某个类的class对象被载入内存，它就被用来创建这个类的所有对象</p>
+<p><code>Class.forName(String)</code> 这个方法是取得<code>Class</code>对象的引用的一种方法，它是一个包含目标类的文本名（大小写敏感）的<code>String</code>作为参数，返回一个<code>Class</code>对象的引用，在类尚未加载之前调用这个方法，会先去加载这个类，<code>Class</code>包含很多有用的方法</p>
+<ul>
+<li>getName()  返回全限定的类名</li>
+<li>getSimpleName()  不包含包名的类名</li>
+<li>getCanonicalName() 全限定的类名</li>
+<li>newInstance() 是实现虚拟构造器的一种途径，虚拟构造器允许你声明：”我不知道你的确切类型，但是无论如何你要正确的创建你自己”，另外使用这个方法来创建的类，必须带有默认的构造器。</li>
+<li>getSuperclass()查询其直接基类</li>
+</ul>
+<h4 id="类字面常量"><a href="#类字面常量" class="headerlink" title="类字面常量"></a>类字面常量</h4><p>使用<code>className.class</code><br>使用这种方式创建<code>class</code>对象的引用时，不会自动初始化该<code>class</code>对象（不会加载类），为了使用类而做的准备工作实际包含三个步骤：</p>
+<ul>
+<li>加载 由类家灾区执行的，该步骤将查找字节码（通常在<code>classpath</code>所指定的路径中查找，但这并非是必需的），并从这些字节码中创建一个<code>class</code>对象</li>
+<li>链接 在链接阶段将验证类中的字节码，为静态域分配存储空间，并且如果必需的话，将解析这个类创建的对其他类的所有引用</li>
+<li>初始化 如果该类具有超类，则对其进行初始化，执行静态初始化器和静态初始化块<br>初始化被延迟到了对静态方法（构造器隐式的是静态的）或者非常数静态域进行首次引用时才执行。<br>初始化有效的实现了尽可能的”惰性”</li>
+</ul>
+<p>关于<code>static final</code>关键字<br>如果一个<code>static final</code>值是”编译期常量”，这个值不需要对类的初始化就可以被读取。<br>如果一个<code>static</code>域不是<code>final</code>的，那么对他访问前，要先进行链接（为这个域分配存储空间）和初始化（初始化存储空间）</p>
+<h4 id="泛化的Class引用"><a href="#泛化的Class引用" class="headerlink" title="泛化的Class引用"></a>泛化的Class引用</h4><p><code>Class</code>引用总是指向某个<code>Class</code>对象,它可以制造类的实例，并包含可作用于这些实例的所有方法代码。它还可以包含该类的静态成员，因此，<code>Class</code>引用表示的就是它所指向的对象的确切类型，而该对象便是<code>Class</code>类的一个对象。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GenericClassReferences</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    Class intClass = <span class="keyword">int</span>.class;</div><div class="line">    Class&lt;Integer&gt; genericIntClass = <span class="keyword">int</span>.class;</div><div class="line">    genericIntClass = Integer.class; <span class="comment">// Same thing</span></div><div class="line">    intClass = <span class="keyword">double</span>.class;</div><div class="line">    <span class="comment">// genericIntClass = double.class; // Illegal</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>普通的类引用不会产生警告信息，尽管泛型类引用只能赋值为指向其声明的类型，但是普通的类引用可以被重新赋值为指向任何其他的<code>Class</code>对象，通过泛型语法，可以让编译器强制执行额外的类型检查。</p>
+<p>为了在泛化的<code>Class</code>引用时放松限制，可以使用通配符 “?”，它是java泛型的一部分，表示“任何事物”</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WildcardClassReferences</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    Class&lt;?&gt; intClass = <span class="keyword">int</span>.class;</div><div class="line">    intClass = <span class="keyword">double</span>.class;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><em>Class&lt;?&gt;优于平凡的Class，即便他们是等价的，而且平凡的Class如你所见，不会产生编译器警告信息，Class&lt;?&gt;的好处是它表示你并非是碰巧或者疏忽，而使用了一个非具体的类引用，你就是选择了非具体的版本</em></p>
+<p>为了创建一个Class引用，它被限定为某种类型，<strong>或该类型的任何子类型</strong>，你需要将通配符与extends关键字相结合，创建一个范围。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BoundedClassReferences</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    Class&lt;? extends Number&gt; bounded = <span class="keyword">int</span>.class;</div><div class="line">    bounded = <span class="keyword">double</span>.class;</div><div class="line">    bounded = Number.class;</div><div class="line">    <span class="comment">// Or anything else derived from Number.</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>向Class引用添加泛型语法的原因仅仅是为了提供编译期类型检查，因此如果你操作有误，稍后立即就会发现它。</p>
+<h4 id="新的转型语法"><a href="#新的转型语法" class="headerlink" title="新的转型语法"></a>新的转型语法</h4><p><code>cast()</code><br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassCasts</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    Building b = <span class="keyword">new</span> House();</div><div class="line">    Class&lt;House&gt; houseType = House.class;</div><div class="line">    House h = houseType.cast(b);</div><div class="line">    h = (House)b; <span class="comment">// ... or just do this.</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="转型前先做类型检查"><a href="#转型前先做类型检查" class="headerlink" title="转型前先做类型检查"></a>转型前先做类型检查</h4><p> 传统的类型转换，如果执行了一个错误的类型转换，就会抛出一个<code>ClassCastException</code>异常。</p>
+<p>java要执行类型检查（类型安全的向下转型），之所以叫向下转型，是因为类层次结构图从来就是这么排序的，如果将<code>Circle</code>类型转换为<code>Shape</code>类型，就称为向上转型，反之为向下。因为知道<code>Circle</code>就是一个<code>Shape</code>，所以类型编译器允许你自由的做向上转型的赋值操作而不需要任何显示的转型操作。</p>
+<p>但是在编译期，编译器不知道这个<code>Shape</code>的具体类型，他可以是一个<code>Shape</code>，也可能是他的一个子类型，因此如果不使用显示的类型转换，编译器就不允许你执行向下转型赋值，以告知编译期你有额外的信息，这些信息使你知道该类型是某种特定类型（编译器将检查向下转型是否合理，因此它不允许向下转型到实际上不是待转型类的子类的类型上）</p>
+<p>因此可以使用<code>instanceof</code>关键字，以提问的方式先判断这个类的类型<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">if</span>(x <span class="keyword">instanceof</span> Dog)&#123;</div><div class="line">   ((Dog)x).bark();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="动态的instanceof-isInstance"><a href="#动态的instanceof-isInstance" class="headerlink" title="动态的instanceof  isInstance()"></a>动态的instanceof  isInstance()</h4><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PetCount3</span> </span>&#123;</div><div class="line">  <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PetCounter</span> <span class="keyword">extends</span> <span class="title">LinkedHashMap</span>&lt;<span class="title">Class</span>&lt;? <span class="keyword">extends</span> <span class="title">Pet</span>&gt;,<span class="title">Integer</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PetCounter</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="keyword">super</span>(MapData.map(LiteralPetCreator.allTypes, <span class="number">0</span>));</div><div class="line">    &#125;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">count</span><span class="params">(Pet pet)</span> </span>&#123;</div><div class="line">      <span class="comment">// Class.isInstance() eliminates instanceofs:</span></div><div class="line">      <span class="keyword">for</span>(Map.Entry&lt;Class&lt;? extends Pet&gt;,Integer&gt; pair</div><div class="line">          : entrySet())</div><div class="line">        <span class="keyword">if</span>(pair.getKey().isInstance(pet))</div><div class="line">          put(pair.getKey(), pair.getValue() + <span class="number">1</span>);</div><div class="line">    &#125; </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">      StringBuilder result = <span class="keyword">new</span> StringBuilder(<span class="string">"&#123;"</span>);</div><div class="line">      <span class="keyword">for</span>(Map.Entry&lt;Class&lt;? extends Pet&gt;,Integer&gt; pair</div><div class="line">          : entrySet()) &#123;</div><div class="line">        result.append(pair.getKey().getSimpleName());</div><div class="line">        result.append(<span class="string">"="</span>);</div><div class="line">        result.append(pair.getValue());</div><div class="line">        result.append(<span class="string">", "</span>);</div><div class="line">      &#125;</div><div class="line">      result.delete(result.length()-<span class="number">2</span>, result.length());</div><div class="line">      result.append(<span class="string">"&#125;"</span>);</div><div class="line">      <span class="keyword">return</span> result.toString();</div><div class="line">    &#125;</div><div class="line">  &#125; </div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    PetCounter petCount = <span class="keyword">new</span> PetCounter();</div><div class="line">    <span class="keyword">for</span>(Pet pet : Pets.createArray(<span class="number">20</span>)) &#123;</div><div class="line">      printnb(pet.getClass().getSimpleName() + <span class="string">" "</span>);</div><div class="line">      petCount.count(pet);</div><div class="line">    &#125;</div><div class="line">    print();</div><div class="line">    print(petCount);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>PetCounter3</code>预加载了<code>LiteralPetCreator.allTypes</code>，这个是一个类的数组中的类型，可以看到使用<code>isInstance()</code>方法可以使我们不在需要instance表达式，只要改变<code>LiteralPetCreator.allTypes</code>数组中的内容就行了。</p>
+<h4 id="递归计数-Class-isAssignableFrom"><a href="#递归计数-Class-isAssignableFrom" class="headerlink" title="递归计数  Class.isAssignableFrom()"></a>递归计数  Class.isAssignableFrom()</h4><p>在上面的<code>PetCounter3</code>的<code>map</code>中预加载了所有不同的的<code>Pet</code>类，与预加载映射表不同的是，我们可以使用<code>Class.isAssignableFrom()</code>，并创建一个不局限于对<code>Pet</code>的通用计数工具。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TypeCounter</span> <span class="keyword">extends</span> <span class="title">HashMap</span>&lt;<span class="title">Class</span>&lt;?&gt;,<span class="title">Integer</span>&gt;</span>&#123;</div><div class="line">  <span class="keyword">private</span> Class&lt;?&gt; baseType;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="title">TypeCounter</span><span class="params">(Class&lt;?&gt; baseType)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.baseType = baseType;</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">count</span><span class="params">(Object obj)</span> </span>&#123;</div><div class="line">    Class&lt;?&gt; type = obj.getClass();</div><div class="line">    <span class="keyword">if</span>(!baseType.isAssignableFrom(type))</div><div class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(obj + <span class="string">" incorrect type: "</span></div><div class="line">        + type + <span class="string">", should be type or subtype of "</span></div><div class="line">        + baseType);</div><div class="line">    countClass(type);</div><div class="line">  &#125; </div><div class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">countClass</span><span class="params">(Class&lt;?&gt; type)</span> </span>&#123;</div><div class="line">    Integer quantity = get(type);</div><div class="line">    put(type, quantity == <span class="keyword">null</span> ? <span class="number">1</span> : quantity + <span class="number">1</span>);</div><div class="line">    Class&lt;?&gt; superClass = type.getSuperclass();</div><div class="line">    <span class="keyword">if</span>(superClass != <span class="keyword">null</span> &amp;&amp;</div><div class="line">       baseType.isAssignableFrom(superClass))</div><div class="line">      countClass(superClass);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>Class.isAssignableFrom()</code> 如果调用这个方法的class或接口 与 参数cls表示的类或接口相同，或者是参数cls表示的类或接口的父类，则返回true。例：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line">System.out.println(ArrayList.class.isAssignableFrom(Object.class));  <span class="comment">//false</span></div><div class="line">System.out.println(Object.class.isAssignableFrom(ArrayList.class));  <span class="comment">//true</span></div></pre></td></tr></table></figure></p>
+<p><code>count()</code>方法获取其参数的Class，然后使用<code>isAssignableFrom()</code>来执行运行时的检查，以校验你传递的对象确实是我们感兴趣的<strong>继承结构</strong>。<code>countClass()</code>首先对该类的确切类型计数，然后，如果其超累可以赋值给<code>baseType</code>，<code>countClass</code>将其超类上递归计数。</p>
+<h4 id="注册工厂"><a href="#注册工厂" class="headerlink" title="注册工厂"></a>注册工厂</h4><p>//其实下面两段没太看懂<br>生成<code>Pet</code>继承结构中的对象存在着一个问题，即每次向该继承结构添加新的<code>Pet</code>类型时，必须将其添加为<code>LiteralPetCreator</code>中的项。如果在系统中已经存在了继承结构的常规的基础，然后在其上要添加更多的类，那么就有可能会出现问题。</p>
+<p>你可能会考虑在每个子类中添加静态初始化器，以使得该初始化器可以将它的类添加到某个<code>List</code>中，遗憾的是，静态初始化器只有在类首先被加载的情况下才能被调用，因此你就碰上了是”先有鸡还是先有蛋”的问题:生成器在其列表中不包含这个类，因此它永远不能创建这个类的对象，而这个类也就不能被加载并置于这个列表中。</p>
+<p>在这里引入<em>工厂方法模式</em>，将对象的创建交给类自己去实现，工厂方法可以被多态的调用，从而为你创建恰当的对象。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Factory</span>&lt;<span class="title">T</span>&gt; </span>&#123; <span class="function">T <span class="title">create</span><span class="params">()</span></span>; &#125;  <span class="comment">//工厂方法</span></div></pre></td></tr></table></figure>
+<p>泛型参数<code>T</code>使得<code>create()</code>可以在每种<code>Factory</code>实现中返回不同的类型。<br>在下面的示例中，基类<code>Part</code>包含一个工厂对象的列表。对于这个由<code>createRandom()</code>方法产生的类型，它的工厂都被添加到了<code>partFactories</code>中去，从而被注册到了基类中。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Part</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> getClass().getSimpleName();</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">static</span> List&lt;Factory&lt;? extends Part&gt;&gt; partFactories = <span class="keyword">new</span> ArrayList&lt;Factory&lt;? extends Part&gt;&gt;();  </div><div class="line">  <span class="keyword">static</span> &#123;</div><div class="line">    <span class="comment">// Collections.addAll() gives an "unchecked generic</span></div><div class="line">    <span class="comment">// array creation ... for varargs parameter" warning.</span></div><div class="line">    partFactories.add(<span class="keyword">new</span> FuelFilter.Factory());</div><div class="line">    partFactories.add(<span class="keyword">new</span> AirFilter.Factory());</div><div class="line">    partFactories.add(<span class="keyword">new</span> CabinAirFilter.Factory());</div><div class="line">    partFactories.add(<span class="keyword">new</span> OilFilter.Factory());</div><div class="line">    partFactories.add(<span class="keyword">new</span> FanBelt.Factory());</div><div class="line">    partFactories.add(<span class="keyword">new</span> PowerSteeringBelt.Factory());</div><div class="line">    partFactories.add(<span class="keyword">new</span> GeneratorBelt.Factory());</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Random rand = <span class="keyword">new</span> Random(<span class="number">47</span>);</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Part <span class="title">createRandom</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">int</span> n = rand.nextInt(partFactories.size());</div><div class="line">    <span class="keyword">return</span> partFactories.get(n).create();</div><div class="line">  &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Filter</span> <span class="keyword">extends</span> <span class="title">Part</span> </span>&#123;&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">FuelFilter</span> <span class="keyword">extends</span> <span class="title">Filter</span> </span>&#123;</div><div class="line">  <span class="comment">// Create a Class Factory for each specific type:</span></div><div class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> <span class="keyword">implements</span> <span class="title">typeinfo</span>.<span class="title">factory</span>.<span class="title">Factory</span>&lt;<span class="title">FuelFilter</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> FuelFilter <span class="title">create</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">new</span> FuelFilter(); &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">AirFilter</span> <span class="keyword">extends</span> <span class="title">Filter</span> </span>&#123;</div><div class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> <span class="keyword">implements</span> <span class="title">typeinfo</span>.<span class="title">factory</span>.<span class="title">Factory</span>&lt;<span class="title">AirFilter</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> AirFilter <span class="title">create</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">new</span> AirFilter(); &#125;</div><div class="line">  &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">CabinAirFilter</span> <span class="keyword">extends</span> <span class="title">Filter</span> </span>&#123;</div><div class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span></span></div><div class="line">  <span class="keyword">implements</span> <span class="title">typeinfo</span>.<span class="title">factory</span>.<span class="title">Factory</span>&lt;<span class="title">CabinAirFilter</span>&gt; &#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> CabinAirFilter <span class="title">create</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="keyword">return</span> <span class="keyword">new</span> CabinAirFilter();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">OilFilter</span> <span class="keyword">extends</span> <span class="title">Filter</span> </span>&#123;</div><div class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> <span class="keyword">implements</span> <span class="title">typeinfo</span>.<span class="title">factory</span>.<span class="title">Factory</span>&lt;<span class="title">OilFilter</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> OilFilter <span class="title">create</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">new</span> OilFilter(); &#125;</div><div class="line">  &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Belt</span> <span class="keyword">extends</span> <span class="title">Part</span> </span>&#123;&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">FanBelt</span> <span class="keyword">extends</span> <span class="title">Belt</span> </span>&#123;</div><div class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> <span class="keyword">implements</span> <span class="title">typeinfo</span>.<span class="title">factory</span>.<span class="title">Factory</span>&lt;<span class="title">FanBelt</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> FanBelt <span class="title">create</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">new</span> FanBelt(); &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">GeneratorBelt</span> <span class="keyword">extends</span> <span class="title">Belt</span> </span>&#123;</div><div class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> <span class="keyword">implements</span> <span class="title">typeinfo</span>.<span class="title">factory</span>.<span class="title">Factory</span>&lt;<span class="title">GeneratorBelt</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> GeneratorBelt <span class="title">create</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="keyword">return</span> <span class="keyword">new</span> GeneratorBelt();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">PowerSteeringBelt</span> <span class="keyword">extends</span> <span class="title">Belt</span> </span>&#123;</div><div class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Factory</span> <span class="keyword">implements</span> <span class="title">typeinfo</span>.<span class="title">factory</span>.<span class="title">Factory</span>&lt;<span class="title">PowerSteeringBelt</span>&gt; </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> PowerSteeringBelt <span class="title">create</span><span class="params">()</span> </span>&#123;</div><div class="line">      <span class="keyword">return</span> <span class="keyword">new</span> PowerSteeringBelt();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RegisteredFactories</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</div><div class="line">      System.out.println(Part.createRandom());</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="instanceof与Class的等价性"><a href="#instanceof与Class的等价性" class="headerlink" title="instanceof与Class的等价性"></a>instanceof与Class的等价性</h4><p>在查询类型信息的时候，以<code>instanceof</code>的形式和直接比较<code>Class</code>对象有一个很重要的差别。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Base</span> </span>&#123;&#125;</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Derived</span> <span class="keyword">extends</span> <span class="title">Base</span> </span>&#123;&#125; </div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FamilyVsExactType</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(Object x)</span> </span>&#123;</div><div class="line">    print(<span class="string">"Testing x of type "</span> + x.getClass());</div><div class="line">    print(<span class="string">"x instanceof Base "</span> + (x <span class="keyword">instanceof</span> Base));</div><div class="line">    print(<span class="string">"x instanceof Derived "</span>+ (x <span class="keyword">instanceof</span> Derived));</div><div class="line">    print(<span class="string">"Base.isInstance(x) "</span>+ Base.class.isInstance(x));</div><div class="line">    print(<span class="string">"Derived.isInstance(x) "</span> +</div><div class="line">      Derived.class.isInstance(x));</div><div class="line">    print(<span class="string">"x.getClass() == Base.class "</span> +</div><div class="line">      (x.getClass() == Base.class));</div><div class="line">    print(<span class="string">"x.getClass() == Derived.class "</span> +</div><div class="line">      (x.getClass() == Derived.class));</div><div class="line">    print(<span class="string">"x.getClass().equals(Base.class)) "</span>+</div><div class="line">      (x.getClass().equals(Base.class)));</div><div class="line">    print(<span class="string">"x.getClass().equals(Derived.class)) "</span> +</div><div class="line">      (x.getClass().equals(Derived.class)));</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    test(<span class="keyword">new</span> Base());</div><div class="line">    test(<span class="keyword">new</span> Derived());</div><div class="line">  &#125; </div><div class="line">&#125; <span class="comment">/* Output:</span></div><div class="line">Testing x of type class typeinfo.Base</div><div class="line">x instanceof Base true</div><div class="line">x instanceof Derived false</div><div class="line">Base.isInstance(x) true</div><div class="line">Derived.isInstance(x) false</div><div class="line">x.getClass() == Base.class true</div><div class="line">x.getClass() == Derived.class false</div><div class="line">x.getClass().equals(Base.class)) true</div><div class="line">x.getClass().equals(Derived.class)) false</div><div class="line">Testing x of type class typeinfo.Derived</div><div class="line">x instanceof Base true</div><div class="line">x instanceof Derived true</div><div class="line">Base.isInstance(x) true</div><div class="line">Derived.isInstance(x) true</div><div class="line">x.getClass() == Base.class false</div><div class="line">x.getClass() == Derived.class true</div><div class="line">x.getClass().equals(Base.class)) false</div><div class="line">x.getClass().equals(Derived.class)) true</div><div class="line">*/<span class="comment">//:~</span></div></pre></td></tr></table></figure></p>
+<p>在上述代码中，<code>instanceof</code>和<code>isInstance()</code>结果一样，<code>equals</code>和<code>==</code>结果一样，<code>instanceof</code>保持了类型的概念，而用<code>==</code>就没有考虑继承。</p>
+<h3 id="反射：运行时的类信息"><a href="#反射：运行时的类信息" class="headerlink" title="反射：运行时的类信息"></a>反射：运行时的类信息</h3><p>如果不知道某个对象的确切信息，RTTI可以告诉你。但是有一个限制：这个类型在编译时必须已知，这样才能使用RTTI去识别它，并利用这些信息做一些有用的事。换句话说，在编译时，编译器必须知道所有要通过RTTI来处理的类。</p>
+<p>初看起来这似乎不是个限制，但是假设你获取了一个指向某个并不在你的程序空间中的对象的引用，事实上，在编译时你的程序根本没法获知这个对象所属的类。例如，假如你从磁盘文件，或者网络连接中获取了一串字节，并且你被告知这些字节代表了一个类。既然这个类在编译器为你的程序生成代码之后很久才会出现，那么怎样才能使用这样的类呢？</p>
+<p>此外人们还希望提供在跨网络的远程平台上创建和运行对象的能力，这也是反射出现的动机之一。</p>
+<p><code>Class</code>类与<code>java.lang.reflect</code>类库一起对反射的概念进行了支持，该类库包括了<code>Field</code>、<code>Method</code>、以及<code>Constructor</code>类（都实现了Member接口）。这些类型的对象是由jvm在运行时创建的，用以表示未知类里对应的成员。这样你就可以使用<code>Constructor</code>创建新的对象，用<code>get()</code>和<code>set()</code>方法读取和修改与<code>Field</code>对象关联的字段，用<code>invoke()</code>方法调用与<code>Method</code>对象关联的方法。另外，还可以调用<code>getField()</code>、<code>getMethod()</code>、<code>getConstructor()</code>等很便利的方法以返回表示字段、方法、以及构造器的对象的数组，这样匿名对象的类信息就能在运行时被完全确定下来，而编译时不需要知道任何事情。</p>
+<p>当通过反射与一个未知类型的对象打交道时，<code>jvm</code>只是简单的检查这个对象，看它属于哪个特定的类（就想RTTI那样）。在用它做其他事情之前必须先加载那个类的<code>Class</code>对象，因此那个类的.class文件对于JVM来说是必须可获取的，要么本地要么网络。所以反射和RTTI真正的区别在于，对RTTI来说，编译器在编译时打开和检查.class文件。（换句话说，我们可以用”普通”方式调用对象的所有方法）而对于反射机制来说，.class文件在编译时是不可获取的，所以是在运行时打开和检查.class文件。</p>
+<h4 id="类方法提取器"><a href="#类方法提取器" class="headerlink" title="类方法提取器"></a>类方法提取器</h4><p>通常你不需要直接使用反射工具，但是它们在你需要创建更加动态的代码时会很有用，反射在<code>Java</code>中是用来支持其他特性的，例如对象序列化和<code>JavaBean</code>。但是如果能动态的提取某个类的信息有的时候还是很有用的。请考虑方法提取器。<br>Class的<code>getMethod()</code>和<code>getConstructor()</code>方法分别返回<code>Method</code>对象的数组和<code>Constructor</code>对象的数组。这两个类都提供了深层方法，用以解析其对象所代表的方法，并获取其名字。输入参数以及返回值。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShowMethods</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> String usage =</div><div class="line">    <span class="string">"usage:\n"</span> +</div><div class="line">    <span class="string">"ShowMethods qualified.class.name\n"</span> +</div><div class="line">    <span class="string">"To show all methods in class or:\n"</span> +</div><div class="line">    <span class="string">"ShowMethods qualified.class.name word\n"</span> +</div><div class="line">    <span class="string">"To search for methods involving 'word'"</span>;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Pattern p = Pattern.compile(<span class="string">"\\w+\\."</span>);</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span>(args.length &lt; <span class="number">1</span>) &#123;</div><div class="line">      print(usage);</div><div class="line">      System.exit(<span class="number">0</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">int</span> lines = <span class="number">0</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">      Class&lt;?&gt; c = Class.forName(args[<span class="number">0</span>]);</div><div class="line">      Method[] methods = c.getMethods();</div><div class="line">      Constructor[] ctors = c.getConstructors();</div><div class="line">      <span class="keyword">if</span>(args.length == <span class="number">1</span>) &#123;</div><div class="line">        <span class="keyword">for</span>(Method method : methods)</div><div class="line">          print(</div><div class="line">            p.matcher(method.toString()).replaceAll(<span class="string">""</span>));</div><div class="line">        <span class="keyword">for</span>(Constructor ctor : ctors)</div><div class="line">          print(p.matcher(ctor.toString()).replaceAll(<span class="string">""</span>));</div><div class="line">        lines = methods.length + ctors.length;</div><div class="line">      &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">for</span>(Method method : methods)</div><div class="line">          <span class="keyword">if</span>(method.toString().indexOf(args[<span class="number">1</span>]) != -<span class="number">1</span>) &#123;</div><div class="line">            print(</div><div class="line">              p.matcher(method.toString()).replaceAll(<span class="string">""</span>));</div><div class="line">            lines++;</div><div class="line">          &#125;</div><div class="line">        <span class="keyword">for</span>(Constructor ctor : ctors)</div><div class="line">          <span class="keyword">if</span>(ctor.toString().indexOf(args[<span class="number">1</span>]) != -<span class="number">1</span>) &#123;</div><div class="line">            print(p.matcher(</div><div class="line">              ctor.toString()).replaceAll(<span class="string">""</span>));</div><div class="line">            lines++;</div><div class="line">          &#125;</div><div class="line">      &#125;</div><div class="line">    &#125; <span class="keyword">catch</span>(ClassNotFoundException e) &#123;</div><div class="line">      print(<span class="string">"No such class: "</span> + e);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125; <span class="comment">/* Output:</span></div><div class="line">public static void main(String[])</div><div class="line">public native int hashCode()</div><div class="line">public final native Class getClass()</div><div class="line">public final void wait(long,int) throws InterruptedException</div><div class="line">public final void wait() throws InterruptedException</div><div class="line">public final native void wait(long) throws InterruptedException</div><div class="line">public boolean equals(Object)</div><div class="line">public String toString()</div><div class="line">public final native void notify()</div><div class="line">public final native void notifyAll()</div><div class="line">public ShowMethods()</div><div class="line">*/<span class="comment">//:~</span></div></pre></td></tr></table></figure>
+<h4 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h4><p>代理是基本的设计模式之一，它是你为了提供额外的的或不同的操作而插入的用来代替“实际”对象的对象。这些操作通常涉及与“实际”对象的通信，因此代理通常充当着中间人的角色，下面一个是用来展示代理结构的简单示例：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Interface</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span></span>;</div><div class="line">  <span class="function"><span class="keyword">void</span> <span class="title">somethingElse</span><span class="params">(String arg)</span></span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">RealObject</span> <span class="keyword">implements</span> <span class="title">Interface</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123; print(<span class="string">"doSomething"</span>); &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">somethingElse</span><span class="params">(String arg)</span> </span>&#123;</div><div class="line">    print(<span class="string">"somethingElse "</span> + arg);</div><div class="line">  &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleProxy</span> <span class="keyword">implements</span> <span class="title">Interface</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> Interface proxied;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="title">SimpleProxy</span><span class="params">(Interface proxied)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.proxied = proxied;</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doSomething</span><span class="params">()</span> </span>&#123;</div><div class="line">    print(<span class="string">"SimpleProxy doSomething"</span>);</div><div class="line">    proxied.doSomething();</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">somethingElse</span><span class="params">(String arg)</span> </span>&#123;</div><div class="line">    print(<span class="string">"SimpleProxy somethingElse "</span> + arg);</div><div class="line">    proxied.somethingElse(arg);</div><div class="line">  &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleProxyDemo</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">consumer</span><span class="params">(Interface iface)</span> </span>&#123;</div><div class="line">    iface.doSomething();</div><div class="line">    iface.somethingElse(<span class="string">"bonobo"</span>);</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    consumer(<span class="keyword">new</span> RealObject());</div><div class="line">    consumer(<span class="keyword">new</span> SimpleProxy(<span class="keyword">new</span> RealObject()));</div><div class="line">  &#125;</div><div class="line">&#125; <span class="comment">/* Output:</span></div><div class="line">doSomething</div><div class="line">somethingElse bonobo</div><div class="line">SimpleProxy doSomething</div><div class="line">doSomething</div><div class="line">SimpleProxy somethingElse bonobo</div><div class="line">somethingElse bonobo</div><div class="line">*/<span class="comment">//:~</span></div></pre></td></tr></table></figure></p>
+<p><code>consumer()</code>方法接受<code>Interface</code>，所以它无法知道正在获得的到底是<code>RealObject</code>还是<code>SimpleProxy</code>，因为二者都实现了<code>Interface</code>。但是<code>SimpleProxy</code>已经被插入到了客户端和<code>RealObject</code>之间，因此它会执行操作，然后调用<code>RealObject</code>上相同的方法。</p>
+<p>在任何时刻，只要你想将额外的操作从”实际”的对象中分离到不同的地方，特别当你希望能够很容易的做出修改，从没有使用额外操作转为使用这些操作，或者反过来，代理就显得很有用（设计模式的关键就是封装修改-因此你需要修改事务以证明这种模式的正确性）。例如，如果你希望跟踪对<code>RealObject</code>中方法的调用，或者希望度量这些调用的开销，那么你应该怎样做呢？这些代码肯定是你不希望将其合并到应用中的代码，因此代理使得你可以很容易地添加和删除它们。</p>
+<h5 id="动态代理-1"><a href="#动态代理-1" class="headerlink" title="动态代理"></a>动态代理</h5><p><code>Java</code>的动态代理比代理的思想更向前迈进了一步，因为他可以动态地创建代理并动态地处理对所代理方法的调用。在动态代理上所做的所有调用都会被重定向到单一的调用处理器上，它的工作是揭示调用的类型并确定相应的对策。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DynamicProxyHandler</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> Object proxied;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="title">DynamicProxyHandler</span><span class="params">(Object proxied)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.proxied = proxied;</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> Object</span></div><div class="line">  <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span></div><div class="line">  <span class="keyword">throws</span> Throwable &#123;</div><div class="line">    System.out.println(<span class="string">"**** proxy: "</span> + proxy.getClass() +</div><div class="line">      <span class="string">", method: "</span> + method + <span class="string">", args: "</span> + args);</div><div class="line">    <span class="keyword">if</span>(args != <span class="keyword">null</span>)</div><div class="line">      <span class="keyword">for</span>(Object arg : args)</div><div class="line">        System.out.println(<span class="string">"  "</span> + arg);</div><div class="line">    <span class="keyword">return</span> method.invoke(proxied, args);</div><div class="line">  &#125;</div><div class="line">&#125; </div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleDynamicProxy</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">consumer</span><span class="params">(Interface iface)</span> </span>&#123;</div><div class="line">    iface.doSomething();</div><div class="line">    iface.somethingElse(<span class="string">"bonobo"</span>);</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">    RealObject real = <span class="keyword">new</span> RealObject();</div><div class="line">    consumer(real);</div><div class="line">    <span class="comment">// Insert a proxy and call again:</span></div><div class="line">    Interface proxy = (Interface)Proxy.newProxyInstance(</div><div class="line">      Interface.class.getClassLoader(),</div><div class="line">      <span class="keyword">new</span> Class[]&#123; Interface.class &#125;,</div><div class="line">      <span class="keyword">new</span> DynamicProxyHandler(real));</div><div class="line">    consumer(proxy);</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过调用静态方法<code>Proxy.newProxyInstance()</code>可以创建动态代理，这个方法需要得到一个类加载器（通常可以从已被加载的对象中获取其类加载器，然后传递给它），一个你希望该代理实现的接口列表（不是类或抽象类），以及<code>InvocationHandler</code>接口的一个实现，动态代理可以将所有调用重定向到调用处理器，因此通常会向调用处理器的构造器传递给一个”实际”对象的引用，从而使得调用处理器在执行其中介任务时，可以将其请求转发。</p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2016/08/09/Thinking in java并发/" data-toggle="tooltip" data-placement="top" title="Java并发">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#java" title="java">java</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://github.com/srtianxia/srtianxia.github.io/2016/08/09/Thinking In Java类型信息/";
+    var disqus_url = "http://github.com/srtianxia/srtianxia.github.io/2016/08/09/Thinking In Java类型信息/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Srtianxia&#39;s Blog 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://github.com/srtianxia/srtianxia.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
