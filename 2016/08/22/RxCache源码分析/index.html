@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          RxCache源码分析 - Srtianxia | Srtianxia&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://github.com/srtianxia/srtianxia.github.io/2016/08/22/RxCache源码分析/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Srtianxia&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#源码解析" title="源码解析">源码解析</a>
+                        
+                    </div>
+                    <h1>RxCache源码分析</h1>
+                    <h2 class="subheading"></h2>
+                    <span class="meta">
+                        Posted by srtianxia on
+                        2016-08-22
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="1-整体思路"><a href="#1-整体思路" class="headerlink" title="1 整体思路"></a>1 整体思路</h1><h1 id="2-使用方法"><a href="#2-使用方法" class="headerlink" title="2 使用方法"></a>2 使用方法</h1><h2 id="2-1-定义接口"><a href="#2-1-定义接口" class="headerlink" title="2.1 定义接口"></a>2.1 定义接口</h2><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CacheProviders</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@LifeCache</span>(duration = <span class="number">2</span>, timeUnit = TimeUnit.MINUTES)</div><div class="line">    Observable&lt;Reply&lt;List&lt;Repo&gt;&gt;&gt; getRepos(Observable&lt;List&lt;Repo&gt;&gt; oRepos, DynamicKey userName, EvictDynamicKey evictDynamicKey);</div><div class="line"></div><div class="line">    <span class="meta">@LifeCache</span>(duration = <span class="number">2</span>, timeUnit = TimeUnit.MINUTES)</div><div class="line">    Observable&lt;Reply&lt;List&lt;User&gt;&gt;&gt; getUsers(Observable&lt;List&lt;User&gt;&gt; oUsers, DynamicKey idLastUserQueried, EvictProvider evictProvider);</div><div class="line"></div><div class="line">    Observable&lt;Reply&lt;User&gt;&gt; getCurrentUser(Observable&lt;User&gt; oUser, EvictProvider evictProvider);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>十分简洁，使用了注解<code>@LifeCache</code>声明了缓存的超时时间（<code>duration</code>长度,<code>timeUnit</code>时间单位），接口定义了之后，如何实例化这个接口，看下面。</p>
+<h2 id="2-2-创建CacheProviders对象"><a href="#2-2-创建CacheProviders对象" class="headerlink" title="2.2 创建CacheProviders对象"></a>2.2 创建CacheProviders对象</h2><figure class="highlight java"><table><tr><td class="code"><pre><div class="line">providers = <span class="keyword">new</span> RxCache.Builder()</div><div class="line">                .persistence(cacheDir, <span class="keyword">new</span> GsonSpeaker())</div><div class="line">                .using(Providers.class);</div></pre></td></tr></table></figure>
+<p>实例化的过程是比较常见的<code>Builder</code>模式，和<code>Retrofit</code>的API的实例化的方式很像，调用<code>using()</code>就创建了接口的实例，和<code>Retrofit</code>的<code>create()</code>方法也十分相似，当然内部实现也很相似（都是使用了动态代理）。</p>
+<p><code>using()</code> 方法创建<code>CacheProviders</code>接口实例的过程</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">using</span><span class="params">(<span class="keyword">final</span> Class&lt;T&gt; classProviders)</span> </span>&#123;</div><div class="line">    proxyProviders = <span class="keyword">new</span> ProxyProviders(builder, classProviders);</div><div class="line"></div><div class="line">    <span class="keyword">return</span> (T) Proxy.newProxyInstance(</div><div class="line">        classProviders.getClassLoader(),</div><div class="line">        <span class="keyword">new</span> Class&lt;?&gt;[] &#123;classProviders&#125;,</div><div class="line">        proxyProviders);</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>// persistence 方法之后要看一下</p>
+<p>创建接口的实例使用的是<strong>动态代理技术</strong></p>
+<blockquote>
+<p>简而言之，就是动态生成接口的实现类（当然生成实现类有缓存机制），并创建其实例（称之为代理），代理把对接口的调用转发给 InvocationHandler<br> 实例，而在 InvocationHandler<br> 的实现中，除了执行真正的逻辑（例如再次转发给真正的实现类对象），我们还可以进行一些有用的操作，例如统计执行时间、进行初始化和清理、对接口调用进行检查等。</p>
+<p>为什么要用动态代理？ <strong>因为对接口的所有方法的调用都会集中转发到 <code>InvocationHandler#invoke</code><br>函数中，我们可以集中进行处理，更方便了。</strong>你可能会想，我也可以手写这样的代理类，把所有接口的调用都转发到 <code>InvocationHandler#invoke</code><br> 呀，当然可以，但是可靠地自动生成岂不更方便？</p>
+</blockquote>
+<p>在<code>RxCache 1.5.2</code>版本中,上述<code>ProxyProviders</code>对象的创建方法不是简单的new,而是使用了依赖注入框架<code>dagger</code>,<code>dagger</code>在后面的还有使用,这里只是提一下。</p>
+<p>在这里<code>ProxyProviders</code>实现了<code>InvocationHandler</code>,所以代理把对<strong>接口的调用</strong>转发给了<code>ProxyProviders#invoke</code>,所以我们就看下<code>invoke()</code>方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(<span class="keyword">final</span> Object proxy, <span class="keyword">final</span> Method method, <span class="keyword">final</span> Object[] args)</span></span></div><div class="line">      <span class="keyword">throws</span> Throwable &#123;</div><div class="line">    <span class="keyword">return</span> Observable.defer(<span class="keyword">new</span> Func0&lt;Observable&lt;Object&gt;&gt;() &#123;</div><div class="line">      <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> Observable&lt;Object&gt; <span class="title">call</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> processorProviders.process(proxyTranslator.processMethod(method, args));</div><div class="line">      &#125;</div><div class="line">    &#125;);</div></pre></td></tr></table></figure>
+<p><code>method</code>包含了调用方法的基本信息（注解,返回值类型等）,<code>args</code>是方法的参数列表。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function">ConfigProvider <span class="title">processMethod</span><span class="params">(Method method, Object[] objectsMethod)</span> </span>&#123;</div><div class="line">   ConfigProvider prev = loadConfigProviderMethod(method);</div><div class="line"></div><div class="line">   ConfigProvider configProvider = <span class="keyword">new</span> ConfigProvider(prev.getProviderKey(),</div><div class="line">       <span class="keyword">null</span>, prev.getLifeTimeMillis(), prev.requiredDetailedResponse(), prev.isExpirable(),</div><div class="line">       prev.isEncrypted(), getDynamicKey(method, objectsMethod),</div><div class="line">       getDynamicKeyGroup(method, objectsMethod),</div><div class="line">       getLoaderObservable(method, objectsMethod),</div><div class="line">       evictProvider(method, objectsMethod));</div><div class="line"></div><div class="line">   <span class="keyword">return</span> configProvider;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p><code>ConfigProvider</code>是一个<strong>包装类</strong>，里面包装了该方法本身的属性(名称,相关注解,超时时间之类的)以及方法的调用参数,。</p>
+<p><code>ProxyTranslator#processMethod</code>这个方法先通过<code>ProxyTranslator#loadConfigProviderMethod</code>load出了一个<code>ConfigProvider</code>对象,这个load方法是先从<code>map</code>中读缓存,没有缓存再新创建实例（下面的<code>configProviderMethodCache</code>是一个<code>HashMap</code>）,这里也和<code>Retrofit</code>中的请求方法的缓存方式一样。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> ConfigProvider <span class="title">loadConfigProviderMethod</span><span class="params">(Method method)</span> </span>&#123;</div><div class="line">    ConfigProvider result;</div><div class="line">    <span class="keyword">synchronized</span> (configProviderMethodCache) &#123;</div><div class="line">      result = configProviderMethodCache.get(method);</div><div class="line">      <span class="keyword">if</span> (result == <span class="keyword">null</span>) &#123;</div><div class="line">        result = <span class="keyword">new</span> ConfigProvider(getProviderKey(method),</div><div class="line">            <span class="keyword">null</span>, getLifeTimeCache(method),</div><div class="line">            requiredDetailResponse(method), getExpirable(method), isEncrypted(method),</div><div class="line">            <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line">        configProviderMethodCache.put(method, result);</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>再<code>ProxyTranslator</code>中提供了很多的<code>get()</code>方法,这些get方法可以分为两种,一种是只需要传入一个参数<code>method</code>,另一种需要传入两个参数<code>method</code>和<code>objectsMethod</code>。这里以<code>ProxyTranslator#getLifeTimeCache</code>（一个参数）,<code>ProxyTranslator#getDynamicKey</code>（两个参数）为例。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> Long <span class="title">getLifeTimeCache</span><span class="params">(Method method)</span> </span>&#123;</div><div class="line">    LifeCache lifeCache = method.getAnnotation(LifeCache.class);</div><div class="line">    <span class="keyword">if</span> (lifeCache == <span class="keyword">null</span>) <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">    <span class="keyword">return</span> lifeCache.timeUnit().toMillis(lifeCache.duration());</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>一个参数的很简单，将<strong>注解</strong>中的超时时间读取出来并换算为毫秒,其他的get()方法也相同,<strong>都是为了从注解中取出信息</strong>。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> String <span class="title">getDynamicKey</span><span class="params">(Method method, Object[] objectsMethod)</span> </span>&#123;</div><div class="line">    DynamicKey dynamicKey = getObjectFromMethodParam(method, DynamicKey.class, objectsMethod);</div><div class="line">    <span class="keyword">if</span> (dynamicKey != <span class="keyword">null</span>) <span class="keyword">return</span> dynamicKey.getDynamicKey().toString();</div><div class="line"></div><div class="line">    DynamicKeyGroup dynamicKeyGroup =</div><div class="line">        getObjectFromMethodParam(method, DynamicKeyGroup.class, objectsMethod);</div><div class="line">    <span class="keyword">if</span> (dynamicKeyGroup != <span class="keyword">null</span>) <span class="keyword">return</span> dynamicKeyGroup.getDynamicKey().toString();</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="string">""</span>;</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
+<p>两个参数的也不复杂，比较重要的是<code>ProxyTranslator#getObjectFromMethodParam</code>,这个方法传入三个参数<code>method</code>,<code>Class对象(从参数数组中取出参数的类型)</code>,<code>objectsMethod(参数数组)</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">private</span> &lt;T&gt; <span class="function">T <span class="title">getObjectFromMethodParam</span><span class="params">(Method method, Class&lt;T&gt; expectedClass,</span></span></div><div class="line">     Object[] objectsMethod) &#123;</div><div class="line">   <span class="keyword">int</span> countSameObjectsType = <span class="number">0</span>;</div><div class="line">   T expectedObject = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">   <span class="keyword">for</span> (Object objectParam : objectsMethod) &#123;</div><div class="line">     <span class="keyword">if</span> (expectedClass.isAssignableFrom(objectParam.getClass())) &#123;</div><div class="line">       expectedObject = (T) objectParam;</div><div class="line">       countSameObjectsType++;</div><div class="line">     &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">if</span> (countSameObjectsType &gt; <span class="number">1</span>) &#123;</div><div class="line">     String errorMessage =</div><div class="line">         method.getName() + Locale.JUST_ONE_INSTANCE + expectedObject.getClass().getSimpleName();</div><div class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(errorMessage);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   <span class="keyword">return</span> expectedObject;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>通过代码可以知道,传入Class对象是为了通过遍历取出和你期待的参数类型相同的参数（注意这个<code>isAssignableFrom</code>方法，是用来判断一个类和另一个类是否相同或是另一个类的超类或接口，注意<code>countSameObjectsType</code>就是为了根据作者的本意的约定，防止有继承相同父类或者实现相同接口的参数类型出现）并返回,至此,两个参数的get()方法意图也很明显<strong>根据类型取出从外部调用时的参数对象</strong></p>
+<p>从上面分析看来<code>ProxyTranslator#processMethod</code>的过程就是对一次动态代理的<code>invoke()</code>过程的再封装,返回的是<strong>方法调用的信息的集合（包括方法的参数，注解包含的信息，返回值等等等）</strong>,接下来又回到了动态代理中真正的<code>InvocationHandler</code>实现类<code>ProxyProviders</code>中,继续看真正的<code>invoke()</code>方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(<span class="keyword">final</span> Object proxy, <span class="keyword">final</span> Method method, <span class="keyword">final</span> Object[] args)</span></span></div><div class="line">      <span class="keyword">throws</span> Throwable &#123;</div><div class="line">    <span class="keyword">return</span> Observable.defer(<span class="keyword">new</span> Func0&lt;Observable&lt;Object&gt;&gt;() &#123;</div><div class="line">      <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> Observable&lt;Object&gt; <span class="title">call</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> processorProviders.process(proxyTranslator.processMethod(method, args));</div><div class="line">      &#125;</div><div class="line">    &#125;);</div></pre></td></tr></table></figure>
+<p>又粘贴了下上面的代码哈,这次是<code>ProcessorProviders#process</code>,这个<code>ProcessorProviders</code>点进去看是一个接口,那么真正的实现类呢?</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><div class="line">processorProviders = DaggerRxCacheComponent.builder()</div><div class="line">        .rxCacheModule(<span class="keyword">new</span> RxCacheModule(builder.getCacheDirectory(),</div><div class="line">            builder.useExpiredDataIfLoaderNotAvailable(),</div><div class="line">            builder.getMaxMBPersistenceCache(), getEncryptKey(providersClass),</div><div class="line">            getMigrations(providersClass), builder.getJolyglot()))</div><div class="line">        .build().providers();</div></pre></td></tr></table></figure>
+<p>实例化<code>ProcessorProviders</code>的过程在<code>ProxyProviders</code>的构造函数里。使用了依赖注入框架<code>dagger</code>,本文对<code>dagger</code>的用法不做介绍。点进<code>RxCacheModule#provideProcessorProviders</code>里面返回值类型是<code>ProcessorProvidersBehaviour</code></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2016/08/09/Thinking in java并发/" data-toggle="tooltip" data-placement="top" title="Java并发">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#源码解析" title="源码解析">源码解析</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://github.com/srtianxia/srtianxia.github.io/2016/08/22/RxCache源码分析/";
+    var disqus_url = "http://github.com/srtianxia/srtianxia.github.io/2016/08/22/RxCache源码分析/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/srtianxia">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Srtianxia&#39;s Blog 2016 
+                    <br>
+                    Theme by <a href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://github.com/srtianxia/srtianxia.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="http://github.com/srtianxia/srtianxia.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
