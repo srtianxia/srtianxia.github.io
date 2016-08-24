@@ -90,14 +90,14 @@
 
                         
                         <li>
-                            <a href="/archives/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archives/">Archives</a>
                         </li>
                         
                     
@@ -195,7 +195,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1 id="RxCache使用方法"><a href="#RxCache使用方法" class="headerlink" title="RxCache使用方法"></a>RxCache使用方法</h1><h2 id="定义接口"><a href="#定义接口" class="headerlink" title="定义接口"></a>定义接口</h2><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CacheProviders</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@LifeCache</span>(duration = <span class="number">2</span>, timeUnit = TimeUnit.MINUTES)</div><div class="line">    Observable&lt;Reply&lt;List&lt;Repo&gt;&gt;&gt; getRepos(Observable&lt;List&lt;Repo&gt;&gt; oRepos, DynamicKey userName, EvictDynamicKey evictDynamicKey);</div><div class="line"></div><div class="line">    <span class="meta">@LifeCache</span>(duration = <span class="number">2</span>, timeUnit = TimeUnit.MINUTES)</div><div class="line">    Observable&lt;Reply&lt;List&lt;User&gt;&gt;&gt; getUsers(Observable&lt;List&lt;User&gt;&gt; oUsers, DynamicKey idLastUserQueried, EvictProvider evictProvider);</div><div class="line"></div><div class="line">    Observable&lt;Reply&lt;User&gt;&gt; getCurrentUser(Observable&lt;User&gt; oUser, EvictProvider evictProvider);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+                <h1 id="RxCache"><a href="#RxCache" class="headerlink" title="RxCache"></a>RxCache</h1><p>是使用注解为<code>Retrofit</code>加入二级缓存(内存,磁盘)的缓存库。 开头膜拜大神<br>项目地址 : <a href="https://github.com/VictorAlbertos/RxCache">RxCache</a></p>
+<h1 id="RxCache使用方法"><a href="#RxCache使用方法" class="headerlink" title="RxCache使用方法"></a>RxCache使用方法</h1><h2 id="定义接口"><a href="#定义接口" class="headerlink" title="定义接口"></a>定义接口</h2><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">CacheProviders</span> </span>&#123;</div><div class="line"></div><div class="line">    <span class="meta">@LifeCache</span>(duration = <span class="number">2</span>, timeUnit = TimeUnit.MINUTES)</div><div class="line">    Observable&lt;Reply&lt;List&lt;Repo&gt;&gt;&gt; getRepos(Observable&lt;List&lt;Repo&gt;&gt; oRepos, DynamicKey userName, EvictDynamicKey evictDynamicKey);</div><div class="line"></div><div class="line">    <span class="meta">@LifeCache</span>(duration = <span class="number">2</span>, timeUnit = TimeUnit.MINUTES)</div><div class="line">    Observable&lt;Reply&lt;List&lt;User&gt;&gt;&gt; getUsers(Observable&lt;List&lt;User&gt;&gt; oUsers, DynamicKey idLastUserQueried, EvictProvider evictProvider);</div><div class="line"></div><div class="line">    Observable&lt;Reply&lt;User&gt;&gt; getCurrentUser(Observable&lt;User&gt; oUser, EvictProvider evictProvider);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>十分简洁，使用了注解<code>@LifeCache</code>声明了缓存的超时时间（<code>duration</code>长度,<code>timeUnit</code>时间单位），接口定义了之后，如何实例化这个接口，看下面。</p>
 <h2 id="创建CacheProviders对象"><a href="#创建CacheProviders对象" class="headerlink" title="创建CacheProviders对象"></a>创建CacheProviders对象</h2><figure class="highlight java"><table><tr><td class="code"><pre><div class="line">providers = <span class="keyword">new</span> RxCache.Builder()</div><div class="line">                .persistence(cacheDir, <span class="keyword">new</span> GsonSpeaker())</div><div class="line">                .using(Providers.class);</div></pre></td></tr></table></figure>
 <p>之后的使用和<code>Retrofit</code>无异</p>
